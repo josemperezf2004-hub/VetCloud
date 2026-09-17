@@ -1,0 +1,112 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { ClienteForm } from "@/components/clientes/ClienteForm";
+import type { ClienteInput } from "@/lib/validations";
+
+export function ClienteAcciones({
+  clienteId,
+  nombre,
+  defaultValues,
+}: {
+  clienteId: string;
+  nombre: string;
+  defaultValues: ClienteInput;
+}) {
+  const router = useRouter();
+  const [editando, setEditando] = useState(false);
+  const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
+  const [eliminando, setEliminando] = useState(false);
+
+  async function handleEditar(values: ClienteInput) {
+    const res = await fetch(`/api/clientes/${clienteId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error("No se pudo actualizar", { description: data.error });
+      return;
+    }
+
+    toast.success("Propietario actualizado");
+    setEditando(false);
+    router.refresh();
+  }
+
+  async function handleEliminar() {
+    setEliminando(true);
+    const res = await fetch(`/api/clientes/${clienteId}`, { method: "DELETE" });
+    setEliminando(false);
+
+    if (!res.ok) {
+      toast.error("No se pudo eliminar");
+      return;
+    }
+
+    toast.success("Propietario eliminado");
+    router.push("/clientes");
+  }
+
+  return (
+    <>
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={() => setEditando(true)}>
+          <Pencil className="size-4" />
+          Editar
+        </Button>
+        <Button variant="destructive" onClick={() => setConfirmandoEliminar(true)}>
+          <Trash2 className="size-4" />
+          Eliminar
+        </Button>
+      </div>
+
+      <Dialog open={editando} onOpenChange={setEditando}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Editar propietario</DialogTitle>
+          </DialogHeader>
+          <ClienteForm
+            defaultValues={defaultValues}
+            onSubmit={handleEditar}
+            submitLabel="Guardar cambios"
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={confirmandoEliminar} onOpenChange={setConfirmandoEliminar}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>¿Eliminar a {nombre}?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-600">
+            El propietario se ocultará del sistema pero su historial se
+            conserva. Esta acción no borra datos físicamente.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmandoEliminar(false)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" disabled={eliminando} onClick={handleEliminar}>
+              Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}

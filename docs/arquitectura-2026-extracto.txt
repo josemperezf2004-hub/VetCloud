@@ -1,0 +1,979 @@
+﻿
+ðŸ¾  VetCloud SaaS
+Plataforma de GestiÃ³n para ClÃ­nicas Veterinarias
+Arquitectura TÃ©cnica & Estrategia Comercial
+Documento de DiseÃ±o de Sistema Â· VersiÃ³n 1.0
+Junio 2026 Â· LatinoamÃ©rica
+
+Tabla de Contenido
+
+
+
+1. VisiÃ³n Ejecutiva & Oportunidad de Mercado
+1.1 Propuesta de Valor
+VetCloud es una plataforma SaaS cloud-native diseÃ±ada especÃ­ficamente para la gestiÃ³n integral de clÃ­nicas veterinarias en LatinoamÃ©rica. A diferencia de soluciones genÃ©ricas de escritorio o adaptaciones de sistemas humanos, VetCloud nace con ADN veterinario: flujos clÃ­nicos adaptados a la prÃ¡ctica veterinaria, comunicaciÃ³n propietario-mascota nativa vÃ­a WhatsApp y una arquitectura multiempresa lista para crecer de 1 a 500 sucursales sin cambio de plataforma.
+
+1.2 Oportunidad de Mercado
+Indicador
+Dato
+Fuente
+ClÃ­nicas veterinarias LATAM
+~320,000 activas
+FIAVAC 2024
+PenetraciÃ³n software veterinario
+<12% con soluciÃ³n digital
+EstimaciÃ³n sectorial
+Mercado TAM (software)
+USD 180M anuales
+Grand View Research
+CAGR mascotas LATAM
+9.4% anual 2023-2030
+Bloomberg Intelligence
+WhatsApp penetraciÃ³n LATAM
+91% de propietarios
+Meta Business 2025
+Ticket promedio mensual SaaS
+USD 49â€“199/mes/clÃ­nica
+Benchmarks sector
+
+1.3 Problema que Resuelve
+El 88% de las clÃ­nicas veterinarias LATAM usan papel, Excel o WhatsApp personal para gestionar su negocio.
+Los sistemas existentes son caros (licencias USD 2,000+), complejos de instalar o no contemplan la realidad local (monedas, idioma, regulaciones).
+La comunicaciÃ³n con propietarios es fragmentada, provocando pÃ©rdida de citas, vacunas vencidas sin recordar y baja fidelizaciÃ³n.
+No existe control real de inventario, generando pÃ©rdidas por vencimiento y desabasto en el momento de la consulta.
+
+VisiÃ³n a 5 aÃ±os
+Posicionarse como el sistema operativo de la clÃ­nica veterinaria latinoamericana: desde la cita hasta la factura, desde el inventario hasta la comunicaciÃ³n con el propietario, desde un solo acceso en el navegador sin instalar nada.
+
+
+2. MÃ³dulos Principales del Sistema
+La plataforma se organiza en 18 mÃ³dulos integrados que comparten una base de datos unificada por tenant, permitiendo que los datos fluyan sin duplicidad entre Ã¡reas clÃ­nicas, administrativas y operativas.
+
+#
+MÃ³dulo
+DescripciÃ³n
+Plan MÃ­n.
+Estado
+01
+Clientes
+Propietarios, contactos, historial
+Core
+âœ“ MVP
+02
+Pacientes
+Mascotas, especie, raza, edad, RFID
+Core
+âœ“ MVP
+03
+Agenda Inteligente
+Calendario, asignaciÃ³n vets, recordatorios
+Core
+âœ“ MVP
+04
+Historia ClÃ­nica
+EvoluciÃ³n, diagnÃ³sticos, adjuntos, timeline
+Core
+âœ“ MVP
+05
+Vacunas
+Registro, prÃ³ximas, certificados
+Core
+âœ“ MVP
+06
+Tratamientos
+Prescripciones, protocolos, seguimiento
+Core
+âœ“ MVP
+07
+CirugÃ­as
+Pre-op, post-op, anestesia, complicaciones
+Pro+
+âœ“ MVP
+08
+Laboratorio
+Pedidos, resultados, integraciÃ³n labs
+Pro+
+âœ“ MVP
+09
+HospitalizaciÃ³n
+Camas, turnos, monitoreo vital
+Pro+
+âœ“ MVP
+10
+Inventario
+Stock, lotes, caducidad, descuento auto
+Core
+âœ“ MVP
+11
+Compras
+Proveedores, Ã³rdenes, recepciÃ³n
+Pro+
+âœ“ MVP
+12
+FacturaciÃ³n
+Facturas, pagos, mÃºltiples mÃ©todos
+Core
+âœ“ MVP
+13
+ComunicaciÃ³n
+WhatsApp, email, notificaciones push
+Pro+
+âœ“ MVP
+14
+Dashboard
+KPIs, ventas, alertas, indicadores
+Core
+âœ“ MVP
+15
+Reportes
+Financieros, clÃ­nicos, inventario, exportar
+Pro+
+âœ“ MVP
+16
+RBAC & Seguridad
+Roles, permisos, auditorÃ­a, 2FA
+Core
+âœ“ MVP
+17
+Multitenancy
+Sucursales, aislamiento datos, configs
+Ent.
+âœ“ MVP
+18
+API Gateway
+REST, Webhooks, preparado FHIR-vet
+Ent.
+âœ“ MVP
+
+2.1 GestiÃ³n de Clientes (Propietarios)
+Ficha completa: nombre, documento de identidad, direcciÃ³n, telÃ©fono, email, WhatsApp.
+MÃºltiples mascotas por propietario con vista consolidada.
+Historial de visitas, pagos y comunicaciones.
+SegmentaciÃ³n por etiquetas (VIP, moroso, multi-mascota, etc.).
+ExportaciÃ³n de base de clientes para campaÃ±as de marketing.
+
+2.2 GestiÃ³n de Pacientes (Mascotas)
+Especie, raza, color, sexo, fecha de nacimiento, nÃºmero de chip/RFID, peso actual.
+Foto de perfil y galerÃ­a clÃ­nica.
+Alergias conocidas y condiciones crÃ³nicas destacadas con alerta visual.
+CÃ³digo QR por paciente (imprimible en collar o tarjeta).
+GestiÃ³n de fallecimiento con archivo histÃ³rico preservado.
+
+2.3 Agenda Inteligente
+Vistas: diaria, semanal, mensual, por veterinario.
+DuraciÃ³n configurable por tipo de servicio (consulta general 20 min, cirugÃ­a 90 min, etc.).
+AsignaciÃ³n automÃ¡tica al veterinario disponible o elecciÃ³n manual.
+Estados de cita: Agendada â†’ Confirmada â†’ En espera â†’ En consulta â†’ Completada â†’ No asistiÃ³.
+Recordatorio WhatsApp automÃ¡tico: 48h antes y 2h antes.
+ConfirmaciÃ³n de asistencia por WhatsApp (respuesta SÃ­/No con acciÃ³n automÃ¡tica).
+Reagendamiento con 2 clics desde el panel o desde el link en el mensaje al propietario.
+Control de ausencias del veterinario con bloqueo automÃ¡tico de slots.
+Lista de espera automÃ¡tica si hay cancelaciones.
+
+2.4 Historia ClÃ­nica ElectrÃ³nica
+Anamnesis estructurada y libre.
+Signos vitales: peso, temperatura, FC, FR, TRC, mucosas.
+DiagnÃ³sticos con cÃ³digo CIE-VET (codificaciÃ³n veterinaria adaptada).
+Plan terapÃ©utico con prescripciÃ³n farmacolÃ³gica (descuenta inventario automÃ¡ticamente).
+Adjuntos: imÃ¡genes DICOM, radiografÃ­as, ecografÃ­as, PDFs de laboratorio.
+LÃ­nea de tiempo clÃ­nica: cada entrada ordenada cronolÃ³gicamente con autor y timestamp.
+EvoluciÃ³n SOAP (Subjetivo, Objetivo, EvaluaciÃ³n, Plan).
+Firma digital del veterinario por registro (trazabilidad legal).
+ImpresiÃ³n / exportaciÃ³n PDF de historia completa o por perÃ­odo.
+
+2.5 GestiÃ³n de HospitalizaciÃ³n
+Mapa de camas/boxes configurable por clÃ­nica.
+AsignaciÃ³n de paciente a cama con fecha/hora de ingreso.
+Hoja de hospitalizaciÃ³n: medicaciones programadas, evoluciÃ³n por turno, alertas.
+Monitoreo de signos vitales con registro horario.
+Notificaciones al propietario: mensaje diario de estado vÃ­a WhatsApp.
+Alta mÃ©dica con resumen de hospitalizaciÃ³n adjunto a historia clÃ­nica.
+
+2.6 FacturaciÃ³n y Pagos
+Factura automÃ¡tica al cerrar la consulta con los servicios y productos usados.
+MÃ©todos de pago: efectivo, tarjeta, transferencia, QR, crÃ©dito interno.
+Notas de crÃ©dito y devoluciones.
+Factura electrÃ³nica configurable por paÃ­s (Ecuador, Colombia, MÃ©xico, PerÃº, etc.).
+Cuentas por cobrar y seguimiento de pagos pendientes.
+IntegraciÃ³n con pasarelas de pago (Stripe, Mercado Pago, PayU).
+
+
+3. GestiÃ³n de Inventario Avanzada
+3.1 Flujo de Inventario
+El inventario es bidireccional: las entradas provienen de Ã³rdenes de compra y las salidas se generan automÃ¡ticamente al prescribir medicamentos en una consulta, al facturar un servicio con producto incluido o al registrar consumo directo.
+
+Evento
+AcciÃ³n AutomÃ¡tica
+MÃ³dulo Origen
+PrescripciÃ³n en historia clÃ­nica
+Descuento de stock en tiempo real
+Historia ClÃ­nica
+FacturaciÃ³n de producto
+Salida registrada con costo
+FacturaciÃ³n
+RecepciÃ³n de orden de compra
+Entrada por lote con vencimiento
+Compras
+Ajuste de inventario
+Registro de diferencia con motivo
+Inventario
+HospitalizaciÃ³n (consumo diario)
+Descuento diario programado
+HospitalizaciÃ³n
+DevoluciÃ³n al proveedor
+ReversiÃ³n de entrada parcial
+Compras
+
+3.2 Control de Lotes y Caducidad
+Cada entrada registra: lote, fecha de fabricaciÃ³n, fecha de vencimiento, proveedor, precio de costo.
+Sistema FEFO (First Expired, First Out): al prescribir usa automÃ¡ticamente el lote que vence primero.
+Alertas escalonadas: aviso 90, 60 y 30 dÃ­as antes del vencimiento.
+Reporte de productos prÃ³ximos a vencer para liquidaciÃ³n o devoluciÃ³n.
+
+3.3 Dashboard de Inventario
+Indicador visual tipo semÃ¡foro: verde (stock OK), amarillo (stock bajo), rojo (sin stock).
+Top 20 productos con mayor rotaciÃ³n.
+Productos sin movimiento en 90 dÃ­as (capital inmovilizado).
+Valor total del inventario a precio de costo y precio de venta.
+GrÃ¡fico de consumo vs. compras por mes.
+
+
+4. Sistema de ComunicaciÃ³n con Propietarios
+4.1 Canal WhatsApp Business API
+La integraciÃ³n con WhatsApp Business API (Meta) es el diferenciador mÃ¡s valorado en el mercado LATAM, donde el 91% de los propietarios de mascotas usa WhatsApp diariamente. Los mensajes se envÃ­an desde el nÃºmero oficial de la clÃ­nica, no de un nÃºmero genÃ©rico.
+
+Tipo de Mensaje
+Disparador
+Timing
+ConfirmaciÃ³n de cita
+Al agendar
+Inmediato
+Recordatorio de cita
+AutomÃ¡tico
+48h y 2h antes
+Solicitud de confirmaciÃ³n
+AutomÃ¡tico
+24h antes (responde SÃ­/No)
+Aviso vacuna prÃ³xima
+Calendario vacunal
+15 dÃ­as antes
+Aviso desparasitaciÃ³n
+Protocolo registrado
+7 dÃ­as antes
+Alta hospitalizaciÃ³n
+Al dar de alta
+Inmediato
+FelicitaciÃ³n cumpleaÃ±os mascota
+Fecha nacimiento
+DÃ­a del cumpleaÃ±os 9am
+Control post-cirugÃ­a
+Post-op programado
+3, 7, 14 dÃ­as
+Estado hospitalizaciÃ³n
+Diario automÃ¡tico
+8am cada dÃ­a de internaciÃ³n
+Resultados de laboratorio
+Al cargar resultados
+Inmediato con PDF adjunto
+
+4.2 Canal Email
+Resumen de visita con historia clÃ­nica en PDF firmado digitalmente.
+Factura electrÃ³nica adjunta en PDF.
+Newsletter mensual configurable por la clÃ­nica (tips de salud, promociones).
+CampaÃ±a de recordatorio anual de chequeo preventivo.
+
+4.3 Motor de AutomatizaciÃ³n
+Constructor visual de flujos de comunicaciÃ³n (tipo drip campaign).
+SegmentaciÃ³n por especie, edad, Ãºltima visita, tipo de servicio.
+Horario de envÃ­o configurable para no molestar fuera de horas hÃ¡biles.
+Historial de mensajes enviados con estado: entregado, leÃ­do, respondido.
+Opt-out respetado automÃ¡ticamente (propietarios que no quieren recibir mensajes).
+
+
+5. Arquitectura TÃ©cnica
+5.1 Stack TecnolÃ³gico Recomendado
+Capa
+TecnologÃ­a
+JustificaciÃ³n
+Frontend
+Next.js 14 (App Router)
+SSR, SEO, cÃ³digo compartido mÃ³vil/web, ecosistema React
+UI Components
+TailwindCSS + shadcn/ui
+Velocidad de desarrollo, diseÃ±o consistente, sin lock-in
+Backend API
+NestJS (TypeScript)
+Modular, escalable, decoradores, soporte microservicios futuro
+Base de Datos
+PostgreSQL 16 + TimescaleDB
+ACID, JSON, particionado temporal para signos vitales
+Cache / Sessions
+Redis 7
+Sesiones, rate limiting, pub/sub para notificaciones real-time
+ORM
+Prisma ORM
+Migraciones, type-safety, compatible con multi-schema
+AutenticaciÃ³n
+JWT + Refresh Tokens + 2FA (TOTP)
+Seguridad estÃ¡ndar industria, sin vendor lock-in
+Storage Archivos
+AWS S3 / DigitalOcean Spaces
+ImÃ¡genes, PDFs, DICOM con URLs firmadas temporales
+Search
+PostgreSQL Full-Text Search
+BÃºsqueda de pacientes/clientes sin infra adicional en MVP
+Email
+AWS SES / Resend
+Bajo costo, alta entregabilidad, plantillas HTML
+WhatsApp
+Meta Cloud API (oficial)
+Mensajes de plantilla aprobados, sin riesgo de baneo
+Colas / Jobs
+BullMQ (Redis-backed)
+Recordatorios, reportes asÃ­ncronos, procesamiento batch
+Contenedores
+Docker + Docker Compose
+Paridad dev/prod, despliegue portable
+OrquestaciÃ³n
+Kubernetes (EKS/DOKS) en producciÃ³n
+Auto-scaling, self-healing, rolling updates
+CI/CD
+GitHub Actions
+Pipelines automatizadas, tests, deploy en push a main
+Monitoreo
+Sentry + Datadog / Grafana
+Errores en real-time, mÃ©tricas de infraestructura
+CDN
+CloudFront / Cloudflare
+Assets estÃ¡ticos globales, DDoS protection
+
+5.2 Arquitectura Multitenancy
+Se implementa Schema-per-Tenant en PostgreSQL: cada clÃ­nica (tenant) tiene su propio schema aislado dentro de la misma instancia de base de datos. Esto garantiza aislamiento de datos sin el costo de bases de datos separadas, y permite migrar un tenant a una instancia dedicada si crece.
+
+Estrategia Multitenancy
+Schema-per-tenant en PostgreSQL. El schema 'public' contiene: tenants, planes, facturaciÃ³n SaaS, configuraciÃ³n global. Cada tenant tiene su schema: vetcloud_clinic_[uuid] con todas sus tablas. El middleware de NestJS inyecta el schema correcto en cada request basÃ¡ndose en el subdominio (clinica-abc.vetcloud.com) o el token JWT.
+
+5.3 Seguridad
+HTTPS obligatorio con certificados TLS 1.3 automÃ¡ticos (Let's Encrypt / ACM).
+AutenticaciÃ³n: JWT de corta duraciÃ³n (15 min) + Refresh Token rotativo (7 dÃ­as).
+2FA opcional (TOTP) para roles de Administrador y Veterinario.
+RBAC (Role-Based Access Control): permisos granulares a nivel de mÃ³dulo y acciÃ³n.
+Cifrado en reposo: datos sensibles cifrados con AES-256 (campo a campo en historia clÃ­nica).
+Audit Log: cada operaciÃ³n de escritura registra usuario, timestamp, IP, antes/despuÃ©s.
+Rate limiting por IP y por tenant para prevenir abuso.
+Backups automÃ¡ticos diarios con retenciÃ³n de 30 dÃ­as, cifrados en S3.
+Pruebas de penetraciÃ³n semestrales y escaneo de vulnerabilidades semanal (OWASP ZAP).
+
+5.4 Escalabilidad
+Horizontal scaling del API: mÃºltiples instancias NestJS detrÃ¡s de un load balancer.
+Read replicas de PostgreSQL para reportes pesados sin afectar operaciÃ³n.
+CDN para assets estÃ¡ticos: JS, CSS, imÃ¡genes de la app.
+Serverless Functions para procesos esporÃ¡dicos (generaciÃ³n masiva de PDFs, exports grandes).
+Auto-scaling basado en CPU/memoria en Kubernetes con HPA (Horizontal Pod Autoscaler).
+
+
+6. Modelo de Datos (Entidad-RelaciÃ³n Principal)
+6.1 Entidades NÃºcleo
+El modelo sigue principios de Domain-Driven Design (DDD). Las entidades se organizan en tres dominios: Identidad (tenant, usuarios, roles), ClÃ­nico (pacientes, historias, vacunas) y Operativo (inventario, facturaciÃ³n, compras).
+
+Entidad
+Campos Clave
+Relaciones
+tenants
+id, name, subdomain, plan_id, status, config_json
+1:N clinics, users, subscriptions
+clinics (sucursales)
+id, tenant_id, name, address, phone, timezone
+N:1 tenant, 1:N users_clinics
+users
+id, tenant_id, email, password_hash, role, 2fa_secret
+N:M clinics (pivot), 1:N audit_logs
+owners (propietarios)
+id, tenant_id, full_name, phone, email, whatsapp, tags[]
+1:N patients
+patients (mascotas)
+id, tenant_id, owner_id, name, species, breed, dob, chip_id, photo_url
+1:N clinical_records, vaccines
+appointments
+id, tenant_id, patient_id, vet_id, clinic_id, scheduled_at, status, type
+N:1 patient, vet, clinic
+clinical_records
+id, tenant_id, patient_id, vet_id, soap_json, vitals_json, created_at
+1:N diagnoses, prescriptions, attachments
+diagnoses
+id, record_id, code_vet, description, is_primary
+N:1 clinical_records
+prescriptions
+id, record_id, product_id, dosage, frequency, days, notes
+N:1 clinical_records, products
+vaccines
+id, patient_id, product_id, applied_at, next_due_at, batch_id, vet_id
+N:1 patient, products, batches
+surgeries
+id, patient_id, record_id, type, anesthesia, duration_min, complications
+N:1 patients, clinical_records
+lab_orders
+id, patient_id, record_id, status, results_json, pdf_url
+N:1 patients, clinical_records
+hospitalizations
+id, patient_id, bed_id, admitted_at, discharged_at, notes
+N:1 patients, beds
+products
+id, tenant_id, name, sku, category, unit, min_stock, sale_price, cost_price
+1:N stock_batches, prescription_items
+stock_batches
+id, product_id, quantity, lot_number, expires_at, purchase_order_id
+N:1 products, purchase_orders
+stock_movements
+id, product_id, batch_id, type, quantity, source_type, source_id, created_at
+N:1 products, batches
+purchase_orders
+id, tenant_id, supplier_id, status, total, created_at
+1:N purchase_order_items
+invoices
+id, tenant_id, clinic_id, patient_id, owner_id, total, status, payment_method
+1:N invoice_items, payments
+communication_logs
+id, tenant_id, owner_id, channel, message_type, status, sent_at
+N:1 owners
+
+6.2 Convenciones de Base de Datos
+Todos los IDs son UUID v4 para seguridad y portabilidad.
+Timestamps en UTC con tipo TIMESTAMPTZ en PostgreSQL.
+Soft delete: columna deleted_at en entidades principales (no se borra fÃ­sicamente).
+tenant_id en TODAS las tablas del schema del tenant como seguridad adicional (Row Level Security activado).
+Ãndices en: (tenant_id, created_at), (patient_id), (owner_id), (status) en tablas de alta consulta.
+
+
+7. Roles y Permisos (RBAC)
+MÃ³dulo / AcciÃ³n
+Admin
+Veterinario
+Recepcionista
+Inventario
+Contador
+Dashboard Ejecutivo
+âœ“ Total
+âœ“ ClÃ­nico
+âœ“ BÃ¡sico
+âœ“ Inv.
+âœ“ Financiero
+Clientes - Ver
+âœ“
+âœ“
+âœ“
+â€”
+âœ“
+Clientes - Crear/Editar
+âœ“
+âœ“
+âœ“
+â€”
+â€”
+Pacientes - Historia ClÃ­nica
+âœ“
+âœ“ Crear/Editar
+âœ“ Solo Ver
+â€”
+â€”
+Agenda - Ver
+âœ“
+âœ“
+âœ“
+â€”
+â€”
+Agenda - Crear/Cancelar
+âœ“
+âœ“
+âœ“
+â€”
+â€”
+Inventario - Ver Stock
+âœ“
+âœ“
+âœ“
+âœ“
+âœ“
+Inventario - Ajustar
+âœ“
+â€”
+â€”
+âœ“
+â€”
+Compras / Proveedores
+âœ“
+â€”
+â€”
+âœ“
+âœ“ Solo Ver
+FacturaciÃ³n - Emitir
+âœ“
+â€”
+âœ“
+â€”
+âœ“
+Reportes Financieros
+âœ“
+â€”
+â€”
+â€”
+âœ“
+ConfiguraciÃ³n del sistema
+âœ“
+â€”
+â€”
+â€”
+â€”
+GestiÃ³n de usuarios
+âœ“
+â€”
+â€”
+â€”
+â€”
+Comunicaciones masivas
+âœ“
+â€”
+âœ“ Limitado
+â€”
+â€”
+
+Nota sobre RBAC Granular
+Los permisos se definen a nivel de recurso y acciÃ³n (create, read, update, delete, export). El administrador del tenant puede crear roles personalizados y asignar permisos individuales. Los roles predefinidos son plantillas de inicio, no restricciones fijas.
+
+
+8. Modelo SaaS & Planes Comerciales
+8.1 Estructura de Planes
+CaracterÃ­stica
+BÃ¡sico
+Profesional
+Empresarial
+Precio/mes (USD)
+$49
+$99
+$199+
+Precio/aÃ±o (USD, -15%)
+$500
+$1,010
+CotizaciÃ³n
+Usuarios incluidos
+3
+10
+Ilimitados
+Sucursales
+1
+3
+Ilimitadas
+Pacientes activos
+Hasta 500
+Hasta 2,500
+Ilimitados
+Historia ClÃ­nica
+âœ“
+âœ“
+âœ“
+Agenda Inteligente
+âœ“
+âœ“
+âœ“
+FacturaciÃ³n
+âœ“
+âœ“
+âœ“
+Inventario
+BÃ¡sico
+âœ“ Completo
+âœ“ Completo
+WhatsApp Recordatorios
+500 msg/mes
+2,000 msg/mes
+Ilimitados
+Reportes
+BÃ¡sicos
+Avanzados
+BI Completo
+CirugÃ­as y HospitalizaciÃ³n
+â€”
+âœ“
+âœ“
+IntegraciÃ³n Laboratorio
+â€”
+âœ“
+âœ“
+API Access
+â€”
+â€”
+âœ“
+Soporte
+Email 48h
+Email+Chat 24h
+Dedicado + Onboarding
+Backup
+Semanal
+Diario
+Diario + retenciÃ³n 90 dÃ­as
+Marca blanca
+â€”
+â€”
+Opcional
+
+8.2 Estrategia de Precios para LATAM
+Paridad de poder adquisitivo: descuento adicional 20-30% para mercados Bolivia, Paraguay, Honduras con menor PPA.
+Pago en moneda local disponible para MÃ©xico (MXN), Colombia (COP), Argentina (ARS), Chile (CLP), PerÃº (PEN), Ecuador (USD).
+FacturaciÃ³n mensual sin contrato mÃ­nimo para eliminar fricciÃ³n de entrada.
+Descuento 15% en plan anual para incentivar retenciÃ³n.
+Prueba gratuita 30 dÃ­as con datos reales, sin tarjeta de crÃ©dito.
+Plan BÃ¡sico como 'freemium de facto' a USD 49: suficientemente capaz para clÃ­nicas pequeÃ±as, pero con lÃ­mites que naturalmente llevan al upgrade.
+
+
+9. Roadmap de Desarrollo
+9.1 MVP â€” Meses 1 al 4
+Mes
+Sprint
+Entregables
+Mes 1
+Infraestructura & Auth
+CI/CD, multitenancy, auth JWT+RBAC, registro clÃ­nica, onboarding wizard
+Mes 1
+Clientes & Pacientes
+CRUD completo, bÃºsqueda, ficha, foto de perfil, cÃ³digos QR
+Mes 2
+Agenda
+Calendario, tipos de cita, asignaciÃ³n vets, estados de cita
+Mes 2
+Historia ClÃ­nica v1
+SOAP, signos vitales, diagnÃ³sticos, adjuntos bÃ¡sicos
+Mes 3
+Inventario & FacturaciÃ³n
+Productos, stock, movimientos, factura por consulta, pagos
+Mes 3
+Vacunas & Recordatorios
+Registro vacunal, calendario, WhatsApp bÃ¡sico (confirmaciÃ³n cita)
+Mes 4
+Dashboard & Reportes v1
+KPIs bÃ¡sicos, ventas del dÃ­a, citas, stock bajo, pruebas QA
+Mes 4
+Beta privada
+10 clÃ­nicas piloto, feedback, correcciones, preparaciÃ³n launch
+
+9.2 VersiÃ³n Comercial v1.0 â€” Meses 5 al 8
+Mes
+Funcionalidades
+Mes 5
+CirugÃ­as, hospitalizaciÃ³n, camas, turno de enfermerÃ­a
+Mes 5
+WhatsApp avanzado: felicitaciones, control post-cirugÃ­a, estado hospitalizaciÃ³n
+Mes 6
+MÃ³dulo laboratorio: pedidos, resultados, adjunto PDF, integraciÃ³n bÃ¡sica API labs
+Mes 6
+Compras y proveedores: Ã³rdenes, recepciÃ³n, lotes, vencimientos, FEFO
+Mes 7
+Reportes avanzados: financieros, clÃ­nicos, inventario, exportaciÃ³n Excel/PDF
+Mes 7
+App mÃ³vil PWA: agenda y consulta optimizada para tablet en sala de consulta
+Mes 8
+API REST pÃºblica, webhooks, portal de developers, documentaciÃ³n Swagger
+Mes 8
+Factura electrÃ³nica Ecuador + Colombia, integraciÃ³n Mercado Pago, Stripe
+
+9.3 VersiÃ³n Enterprise v2.0 â€” Meses 9 al 12
+IntegraciÃ³n FHIR veterinaria (adaptaciÃ³n estÃ¡ndar HL7 para animales).
+IntegraciÃ³n laboratorios externos con HL7 y API propietaria.
+App mÃ³vil nativa iOS/Android para propietarios (seguimiento de mascota).
+BI y analÃ­tica avanzada: dashboards por cadena, benchmarking de clÃ­nicas.
+Marca blanca y API para integradores (franquicias veterinarias, pet shops).
+IntegraciÃ³n con aseguradoras veterinarias (cotizaciÃ³n, cobertura automÃ¡tica en factura).
+IoT: integraciÃ³n con bÃ¡sculas digitales, monitores de signos vitales, equipos de lab.
+
+
+10. EstimaciÃ³n de Costos de Infraestructura
+10.1 Costos Mensuales por Etapa
+Componente
+MVP (0-50 tenants)
+Crecimiento (50-500)
+Escala (500-5,000)
+App Servers (EC2/Droplets)
+$60
+$300
+$1,200
+PostgreSQL RDS
+$80
+$300
+$900
+Redis (ElastiCache)
+$20
+$80
+$200
+S3 / Spaces (Storage)
+$10
+$50
+$200
+CDN (CloudFront)
+$5
+$30
+$100
+Email (SES/Resend)
+$5
+$25
+$80
+WhatsApp API (Meta)
+$0.005/msg
+~$100
+~$500
+CI/CD + GitHub Actions
+$0
+$20
+$50
+Monitoring (Datadog)
+$30
+$100
+$300
+Backup & Snapshots
+$10
+$40
+$120
+Dominio + SSL
+$5
+$5
+$5
+TOTAL estimado/mes
+~$225
+~$1,050
+~$3,655
+Costo por tenant/mes
+~$4.50
+~$2.10
+~$0.73
+
+Margen SaaS Proyectado
+Con 500 tenants en Plan BÃ¡sico (USD 49/mes): Ingresos = USD 24,500/mes. Costo infra = USD 1,050/mes. Margen bruto de infraestructura = 95.7%. El modelo es altamente escalable: el costo por tenant cae conforme crece la base.
+
+
+11. Interoperabilidad & Arquitectura Futura
+Aunque estas integraciones no se implementan en el MVP, la arquitectura queda preparada desde el dÃ­a 1 con los patrones correctos para incorporarlas sin refactoring mayor.
+
+IntegraciÃ³n
+TecnologÃ­a / EstÃ¡ndar
+Prioridad Futura
+API REST PÃºblica
+OpenAPI 3.1 + Swagger UI
+Alta (v1.0)
+Webhooks
+HTTPS POST + firma HMAC
+Alta (v1.0)
+FHIR Veterinario
+HL7 FHIR R4 adaptado + recursos custom
+Media (v2.0)
+Laboratorios Externos
+HL7 v2.5, API REST, ASTM E1394
+Alta (v1.5)
+Sistemas Gubernamentales
+SOAP/REST gubernamental (por paÃ­s)
+Baja (v3.0)
+Aseguradoras Veterinarias
+REST + OAuth2 por aseguradora
+Media (v2.0)
+Pasarelas de Pago
+Stripe, Mercado Pago, PayU, PayPhone
+Alta (v1.0)
+Factura ElectrÃ³nica
+SRI (EC), DIAN (CO), SAT (MX), SUNAT (PE)
+Alta (v1.0)
+IoT / Equipos MÃ©dicos
+MQTT, DICOM, Bluetooth LE
+Baja (v3.0)
+App MÃ³vil Propietario
+REST API + WebSockets
+Media (v2.0)
+
+11.1 Principios de DiseÃ±o para Interoperabilidad
+Event-Driven Architecture: todos los eventos del sistema se publican a un bus (BullMQ/EventEmitter) permitiendo conectar consumidores externos sin modificar el core.
+API Gateway desde MVP: cada feature se expone como endpoint REST versionado (/api/v1/...) aunque inicialmente solo sea consumido por el frontend propio.
+Adapter Pattern para integraciones externas: cada integraciÃ³n vive en su propio mÃ³dulo/adapter, aislado del dominio core.
+Idempotencia en todos los endpoints: safe retry para integraciones de pago y mensajerÃ­a.
+
+
+12. Estrategia Go-to-Market LATAM
+12.1 Mercados Objetivo (Prioridad)
+PaÃ­s
+ClÃ­nicas Est.
+RazÃ³n de Entrada
+Canal Principal
+Ecuador
+~4,500
+Mercado inicial, conocimiento local, USD
+Directo + redes vets
+Colombia
+~28,000
+Mayor mercado hispanoparlante accesible
+Partners veterinarios
+PerÃº
+~15,000
+Alta adopciÃ³n digital, crecimiento mascotas
+Inbound + SEO
+MÃ©xico
+~60,000
+Mercado mÃ¡s grande, mÃ¡s competencia
+Franquicias + academias
+Chile
+~8,000
+Alto poder adquisitivo, tech-savvy
+Directo premium
+Argentina
+~22,000
+Gran volumen, reto monetario (USD billing)
+Partnerships
+
+12.2 Canales de AdquisiciÃ³n
+Academias y universidades veterinarias: convenios para uso gratuito en prÃ¡ctica clÃ­nica â†’ crea usuarios que al graduarse conocen el sistema.
+Asociaciones veterinarias: LATAM tiene +40 colegios profesionales â†’ sponsor de eventos, webinars, demos en congresos.
+YouTube + SEO: contenido educativo en espaÃ±ol sobre gestiÃ³n de clÃ­nicas veterinarias, casos de Ã©xito. Meta: 50,000 suscriptores aÃ±o 2.
+Distribuidores farmacÃ©uticos veterinarios: alianza con laboratorios (MSD Animal Health, Zoetis, Elanco) que visitan clÃ­nicas semanalmente.
+Programa de referidos: USD 50 crÃ©dito por cada clÃ­nica referida que active una suscripciÃ³n paga.
+Influencers veterinarios: veterinarios con audiencia en Instagram/TikTok con cÃ³digo de descuento exclusivo.
+
+12.3 MÃ©tricas SaaS Objetivo
+MÃ©trica
+AÃ±o 1
+AÃ±o 2
+AÃ±o 3
+Tenants activos (clÃ­nicas)
+150
+800
+3,000
+MRR (USD)
+$8,000
+$55,000
+$210,000
+ARR (USD)
+$96,000
+$660,000
+$2.5M
+Churn mensual objetivo
+<5%
+<3%
+<2%
+NPS objetivo
+>40
+>55
+>65
+CAC promedio (USD)
+$200
+$150
+$100
+LTV promedio (USD)
+$1,400
+$2,200
+$3,500
+LTV/CAC ratio
+7x
+14.6x
+35x
+
+Ventaja Competitiva Sostenible
+La combinaciÃ³n de (1) datos clÃ­nicos acumulados del paciente, (2) comunicaciÃ³n WhatsApp nativa, (3) precios accesibles en moneda local y (4) soporte en espaÃ±ol genera un 'switching cost' alto: una vez que la clÃ­nica migra 2+ aÃ±os de historia clÃ­nica a VetCloud, el costo de cambiar supera cualquier descuento de la competencia.
+
+
+13. Casos de Uso Principales
+CU-01: Flujo Completo de Consulta
+Recepcionista verifica llegada del paciente en agenda â†’ cambia estado a 'En sala de espera'.
+Veterinario abre historia clÃ­nica â†’ registra motivo de consulta, signos vitales, anamnesis.
+Veterinario registra diagnÃ³stico CIE-VET, prescripciÃ³n de medicamentos.
+Sistema descuenta automÃ¡ticamente los medicamentos prescritos del inventario.
+Veterinario cierra la consulta â†’ se genera pre-factura con servicios + productos.
+Recepcionista confirma pago â†’ se emite factura oficial y resumen por WhatsApp/email.
+
+CU-02: GestiÃ³n de Vacuna PrÃ³xima a Vencer
+Sistema detecta 15 dÃ­as antes que la vacuna antirrÃ¡bica de 'Luna (paciente)' vence.
+Genera aviso automÃ¡tico por WhatsApp al propietario con link para agendar cita.
+Propietario hace clic â†’ elige fecha y hora disponible â†’ cita confirmada sin intervenciÃ³n humana.
+Recordatorio 24h antes â†’ propietario confirma asistencia respondiendo 'SÃ­' al WhatsApp.
+
+CU-03: Alerta de Stock CrÃ­tico
+Sistema detecta que 'Doxiciclina 100mg' alcanzÃ³ el nivel mÃ­nimo de stock (5 unidades).
+Genera alerta en dashboard (semÃ¡foro rojo) y notifica por email al responsable de inventario.
+Responsable abre mÃ³dulo de compras â†’ crea orden de compra al proveedor con un clic (plantilla).
+Al recibir la mercancÃ­a â†’ escanea o registra el lote y vencimiento â†’ stock actualizado.
+
+
+14. Dashboard Ejecutivo
+14.1 Widgets del Dashboard Principal
+Widget
+Datos Mostrados
+ActualizaciÃ³n
+Ventas del dÃ­a
+Total facturado, # facturas, ticket promedio, vs. ayer
+Real-time
+Citas del dÃ­a
+Total agendadas, confirmadas, completadas, no asistieron
+Real-time
+Pacientes atendidos
+Hoy, esta semana, este mes, grÃ¡fico tendencia
+Real-time
+Veterinario del dÃ­a
+Ranking por consultas completadas, ingresos generados
+Cada hora
+Stock crÃ­tico
+Lista de productos en rojo/amarillo con cantidad y proveedor
+Real-time
+Vacunas prÃ³ximas
+Pacientes con vacunas a vencer en 15 dÃ­as, # recordatorios enviados
+Diario 6am
+Indicadores financieros
+Ingresos mes, gastos compras, margen bruto, cuentas x cobrar
+Diario
+HospitalizaciÃ³n
+Camas ocupadas / disponibles, dÃ­as promedio de internaciÃ³n
+Real-time
+WhatsApp
+Mensajes enviados hoy, tasa de lectura, confirmaciones recibidas
+Cada hora
+Top servicios
+Servicios mÃ¡s vendidos esta semana en unidades y valor
+Diario
+
+
+15. Equipo e InversiÃ³n Recomendada para MVP
+Rol
+DedicaciÃ³n
+Costo Mensual Est.
+Meses
+Tech Lead / Arquitecto Backend (NestJS)
+Full-time
+$2,500 â€“ $4,000
+4
+Frontend Developer (Next.js)
+Full-time
+$2,000 â€“ $3,500
+4
+Full-Stack Developer Jr.
+Full-time
+$1,000 â€“ $1,800
+4
+DiseÃ±ador UX/UI
+Part-time (50%)
+$800 â€“ $1,500
+3
+QA / Tester
+Part-time (50%)
+$600 â€“ $1,000
+2
+DevOps / Infra (externo)
+Por proyecto
+$1,500 â€“ $2,500
+1
+
+InversiÃ³n Total Estimada MVP (4 meses)
+Desarrollo: USD 28,000 â€“ 52,000 | Infraestructura: USD 900 | Herramientas y licencias: USD 500 | Marketing lanzamiento: USD 3,000 â€“ 5,000 | TOTAL APROXIMADO: USD 32,000 â€“ 58,000. Con un equipo regional LATAM el costo puede optimizarse a la banda baja. Se recomienda comenzar con 10 clÃ­nicas beta piloto que cofinancien el desarrollo a cambio de precio preferencial vitalicio.
+
+
+16. ConclusiÃ³n EstratÃ©gica
+VetCloud tiene las condiciones para convertirse en el software veterinario de referencia en LatinoamÃ©rica durante los prÃ³ximos 5 aÃ±os por cuatro razones fundamentales:
+
+Mercado sub-digitalizado y en crecimiento: el boom de mascotas post-pandemia en LATAM (+40% tenencia de mascotas desde 2020) genera demanda creciente de servicios veterinarios, y las clÃ­nicas necesitan urgentemente herramientas digitales para manejar ese volumen.
+Propuesta de valor diferenciada: la combinaciÃ³n de WhatsApp nativo, precio accesible en moneda local y flujos diseÃ±ados especÃ­ficamente para la prÃ¡ctica veterinaria latinoamericana no existe en el mercado actual.
+Modelo SaaS con economÃ­a de escala: los costos de infraestructura son sublineales al crecimiento de usuarios, lo que genera mÃ¡rgenes crecientes conforme aumenta la base de clientes.
+Arquitectura preparada para el futuro: multitenancy, API-first, event-driven y preparada para FHIR veterinario permiten expandirse a aseguradoras, laboratorios y marketplaces sin rediseÃ±ar el sistema.
+
+PrÃ³ximo Paso Recomendado
+Validar con 5 clÃ­nicas veterinarias reales en Ecuador/Colombia si estÃ¡n dispuestas a pagar USD 49/mes desde el dÃ­a 1 del MVP. Ese compromiso previo valida el mercado, reduce el riesgo financiero y proporciona feedback de diseÃ±o invaluable antes de invertir en desarrollo completo.
+
