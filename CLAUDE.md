@@ -1219,6 +1219,22 @@ Verificado con `npx tsc --noEmit`, `npm run lint` y `npm run build` (los tres li
 - Cero errores en consola
 - RLS verificado con múltiples tenants
 
+**Estado real del despliegue:** el despliegue a Vercel (paso 7) ya se hizo (ver commit y notas del 2026-09-17: repo en GitHub `josemperezf2004-hub/VetCloud`, auto-deploy desde `main`). Las tareas 1-6 (empty states, loading states por módulo, error boundaries por página, pasada responsive completa, auditoría de aislamiento multi-tenant módulo por módulo, seed script) no se han verificado formalmente una por una — se van cerrando de forma incremental a pedido del usuario en vez de como una fase única. No marcar "Fase 9: completada" hasta repasar ese checklist explícitamente.
+
+---
+
+### AJUSTE POST-FASE 9 — Página de Configuración + fix de layout del Sidebar (2026-09-19)
+
+El sidebar (`NAV_ITEMS` en `components/layout/nav-items.ts`, agregado en la Fase 1) siempre tuvo un link a `/configuracion`, pero ninguna fase del plan construyó esa página — quedaba en 404. Se construyó una versión mínima, a pedido explícito del usuario ("hagamos con lo mínimo este apartado"):
+
+- **`app/(dashboard)/configuracion/page.tsx`** — Server Component con dos tarjetas: datos de la clínica (nombre, teléfono, dirección — el email de la clínica se muestra de solo lectura, no editable desde aquí porque es `@unique` y cambiarlo tiene implicaciones que no pedía el alcance mínimo) y datos de la cuenta del usuario logueado (nombre + cambio de contraseña opcional, con el email y el rol de solo lectura).
+- **`app/api/configuracion/clinica/route.ts`** y **`app/api/configuracion/cuenta/route.ts`** — un PUT cada uno, siguiendo el mismo patrón de sesión + validación zod que el resto del proyecto. El cambio de contraseña no pide la contraseña actual (el usuario ya está autenticado por sesión) — verificado end-to-end: hashea con `bcrypt` (10 rounds, igual que registro), y se confirmó que la contraseña vieja deja de servir y la nueva sí autentica.
+- **Sin restricción de rol todavía** — cualquier usuario autenticado de la clínica (no solo `ADMIN`) puede editar estos datos. Si en el futuro se quiere limitar la edición de datos de la clínica solo a `ADMIN`, es un chequeo de `session.user.rol` a agregar en el PUT correspondiente.
+
+**Bug de layout corregido de paso (reportado por el usuario: "la barra verde no llega al tope de la pantalla"):** en `app/(dashboard)/layout.tsx`, el `<Sidebar>` estaba envuelto en un `<div className="print:hidden">` — un bloque normal, no flex/grid. Aunque ese div sí se estiraba a la altura completa de la fila (por ser hijo directo del contenedor flex del layout), el `<aside>` de adentro no heredaba esa altura automáticamente (un bloque no le "pasa" su alto a un hijo solo por tenerlo él mismo, hace falta `height:100%`, flex/grid, o similar) — así que el fondo verde solo cubría el alto de su propio contenido, no el de la pantalla. Se quitaron los divs envoltorios (moviendo `print:hidden` directo al `<aside>` de `Sidebar.tsx` y al `<header>` de `Header.tsx`) y el `<aside>` ahora usa `md:h-screen md:sticky md:top-0`, que lo fija a 100% del viewport sin depender de que el padre lo estire.
+
+Verificado end-to-end contra Supabase real (clínica de prueba `Clinica ConfigTest` / `admin-configtest@vetcloud.dev`, creada y borrada en la misma verificación, misma convención que fases anteriores): `npx tsc --noEmit`, `npm run lint` y `npm run build` limpios los tres; GET `/configuracion` devuelve 200 con sesión válida; PUT a ambos endpoints persiste los cambios; login con la contraseña vieja rechazado, con la nueva aceptado. Commit `ad0fd98`, pusheado a `main` (auto-deploy a Vercel).
+
 ---
 
 ## 📋 Checklist General de Calidad
