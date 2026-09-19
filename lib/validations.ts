@@ -311,3 +311,27 @@ export const facturaCancelacionSchema = z.object({
 });
 
 export type FacturaCancelacionInput = z.infer<typeof facturaCancelacionSchema>;
+
+export const clinicaConfigSchema = z.object({
+  nombre: z.string().min(2, "Ingresa el nombre de la clínica"),
+  telefono: z.string().optional().or(z.literal("")),
+  direccion: z.string().optional().or(z.literal("")),
+});
+
+export type ClinicaConfigInput = z.infer<typeof clinicaConfigSchema>;
+
+// La contraseña es opcional: solo se actualiza si el usuario escribe una
+// nueva. Vacía u omitida significa "no cambiar la contraseña actual".
+export const cuentaConfigSchema = z.object({
+  nombre: z.string().min(2, "Ingresa tu nombre"),
+  nuevaPassword: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (v) => !v || v.length >= 8,
+      "La contraseña debe tener al menos 8 caracteres"
+    ),
+});
+
+export type CuentaConfigInput = z.infer<typeof cuentaConfigSchema>;

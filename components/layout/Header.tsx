@@ -48,7 +48,7 @@ export function Header({
   }, []);
 
   return (
-    <header className="flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 sm:px-6">
+    <header className="flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 sm:px-6 print:hidden">
       <div className="flex items-center gap-1">
         <MobileNav usuarioNombre={usuarioNombre} usuarioRol={usuarioRol} />
         <nav aria-label="breadcrumb" className="text-sm text-gray-500">

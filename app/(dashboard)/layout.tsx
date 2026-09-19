@@ -18,19 +18,15 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen w-full bg-gray-50">
-      <div className="print:hidden">
-        <Sidebar
+      <Sidebar
+        usuarioNombre={session.user.name ?? session.user.email ?? ""}
+        usuarioRol={session.user.rol}
+      />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Header
           usuarioNombre={session.user.name ?? session.user.email ?? ""}
           usuarioRol={session.user.rol}
         />
-      </div>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className="print:hidden">
-          <Header
-            usuarioNombre={session.user.name ?? session.user.email ?? ""}
-            usuarioRol={session.user.rol}
-          />
-        </div>
         <main className="flex-1 overflow-y-auto p-6 print:overflow-visible print:p-0">
           {children}
         </main>

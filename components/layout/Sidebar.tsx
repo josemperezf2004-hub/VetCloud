@@ -31,7 +31,7 @@ export function Sidebar({
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex md:w-[240px] md:flex-shrink-0 md:flex-col bg-[#0F6E56] text-white">
+    <aside className="hidden md:flex md:h-screen md:sticky md:top-0 md:w-[240px] md:flex-shrink-0 md:flex-col bg-[#0F6E56] text-white print:hidden">
       <div className="flex items-center gap-2 px-5 py-5">
         <PawPrint className="size-7" strokeWidth={1.75} />
         <span className="text-lg font-semibold tracking-tight">VetCloud</span>
