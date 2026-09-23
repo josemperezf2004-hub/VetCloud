@@ -372,6 +372,7 @@ enum CategoriaProducto {
   VACUNA
   ALIMENTO
   ACCESORIO
+  EQUIPO
   INSUMO
   SERVICIO
   OTRO

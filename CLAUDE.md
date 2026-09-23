@@ -564,6 +564,7 @@ enum CategoriaProducto {
   VACUNA
   ALIMENTO
   ACCESORIO
+  EQUIPO
   INSUMO
   SERVICIO
   OTRO
@@ -1234,6 +1235,14 @@ El sidebar (`NAV_ITEMS` en `components/layout/nav-items.ts`, agregado en la Fase
 **Bug de layout corregido de paso (reportado por el usuario: "la barra verde no llega al tope de la pantalla"):** en `app/(dashboard)/layout.tsx`, el `<Sidebar>` estaba envuelto en un `<div className="print:hidden">` — un bloque normal, no flex/grid. Aunque ese div sí se estiraba a la altura completa de la fila (por ser hijo directo del contenedor flex del layout), el `<aside>` de adentro no heredaba esa altura automáticamente (un bloque no le "pasa" su alto a un hijo solo por tenerlo él mismo, hace falta `height:100%`, flex/grid, o similar) — así que el fondo verde solo cubría el alto de su propio contenido, no el de la pantalla. Se quitaron los divs envoltorios (moviendo `print:hidden` directo al `<aside>` de `Sidebar.tsx` y al `<header>` de `Header.tsx`) y el `<aside>` ahora usa `md:h-screen md:sticky md:top-0`, que lo fija a 100% del viewport sin depender de que el padre lo estire.
 
 Verificado end-to-end contra Supabase real (clínica de prueba `Clinica ConfigTest` / `admin-configtest@vetcloud.dev`, creada y borrada en la misma verificación, misma convención que fases anteriores): `npx tsc --noEmit`, `npm run lint` y `npm run build` limpios los tres; GET `/configuracion` devuelve 200 con sesión válida; PUT a ambos endpoints persiste los cambios; login con la contraseña vieja rechazado, con la nueva aceptado. Commit `ad0fd98`, pusheado a `main` (auto-deploy a Vercel).
+
+---
+
+### AJUSTE POST-FASE 9 — Categoría "Equipos" en Inventario (2026-09-23)
+
+Pedido explícito del usuario. Ya se había dejado anotado el 2026-09-17 que esta categoría faltaba, con dos opciones posibles (reusar `OTRO` o agregar un valor nuevo al enum); se eligió la opción "proper": nuevo valor `EQUIPO` en `CategoriaProducto` (migración `20260923205734_add_categoria_equipo`), con label propio (`ProductoTable.tsx::CATEGORIA_LABELS`), entrada en `CATEGORIAS_PRODUCTO` (`lib/validations.ts`, ya seleccionable en el formulario de producto) y pestaña propia en `CategoriaTabs.tsx` (entre Insumos y Servicios) — a diferencia de Alimento/Accesorio/Otro, que siguen sin pestaña dedicada y viven solo dentro de "Todos", Equipos sí la tiene porque es una categoría con dinámica de uso distinta (no se consume/vende como medicamentos o insumos).
+
+Verificado end-to-end contra Supabase real (clínica de prueba `Clinica EquipoTest`, creada durante la verificación): `npx tsc --noEmit`, `npm run lint` y `npm run build` limpios los tres (tras `npx prisma generate` — el cliente generado no queda al día solo con la migración); producto creado con `categoria: "EQUIPO"` vía `POST /api/inventario` (201); pestaña "Equipos" filtra correctamente (`?categoria=EQUIPO` lo muestra, `?categoria=INSUMO` no); label singular "Equipo" renderiza en la fila de la tabla. El producto de prueba se eliminó (soft delete) al terminar; la clínica de prueba queda en la base, misma convención inofensiva que fases anteriores.
 
 ---
 

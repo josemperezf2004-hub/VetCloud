@@ -205,6 +205,7 @@ export const CATEGORIAS_PRODUCTO = [
   "VACUNA",
   "ALIMENTO",
   "ACCESORIO",
+  "EQUIPO",
   "INSUMO",
   "SERVICIO",
   "OTRO",

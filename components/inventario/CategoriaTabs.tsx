@@ -2,15 +2,19 @@ import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
-// El plan pide exactamente estas 5 pestañas (no las 7 categorías completas
-// del enum) — ALIMENTO, ACCESORIO y OTRO siguen existiendo como categoría de
-// producto y son seleccionables en el formulario, sólo no tienen pestaña
-// propia; quedan visibles dentro de "Todos".
+// El plan original pedía exactamente 5 pestañas (no las 7 categorías del
+// enum original) — ALIMENTO, ACCESORIO y OTRO siguen existiendo como
+// categoría de producto y son seleccionables en el formulario, sólo no
+// tienen pestaña propia; quedan visibles dentro de "Todos". EQUIPO se agregó
+// después (pedido explícito del usuario, 2026-09-23) y sí tiene pestaña
+// propia porque es un tipo de inventario con dinámica distinta (no se
+// consume/vende como medicamentos o insumos).
 const TABS = [
   { value: "TODOS", label: "Todos" },
   { value: "MEDICAMENTO", label: "Medicamentos" },
   { value: "VACUNA", label: "Vacunas" },
   { value: "INSUMO", label: "Insumos" },
+  { value: "EQUIPO", label: "Equipos" },
   { value: "SERVICIO", label: "Servicios" },
 ] as const;
 

@@ -18,6 +18,7 @@ export const CATEGORIA_LABELS: Record<string, string> = {
   VACUNA: "Vacuna",
   ALIMENTO: "Alimento",
   ACCESORIO: "Accesorio",
+  EQUIPO: "Equipo",
   INSUMO: "Insumo",
   SERVICIO: "Servicio",
   OTRO: "Otro",
