@@ -6,6 +6,7 @@ declare module "next-auth" {
     rol: string;
     clinicaId: string;
     clinicaNombre: string;
+    esSuperAdmin: boolean;
   }
 
   interface Session {
@@ -14,6 +15,7 @@ declare module "next-auth" {
       rol: string;
       clinicaId: string;
       clinicaNombre: string;
+      esSuperAdmin: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -24,5 +26,6 @@ declare module "next-auth/jwt" {
     rol: string;
     clinicaId: string;
     clinicaNombre: string;
+    esSuperAdmin: boolean;
   }
 }

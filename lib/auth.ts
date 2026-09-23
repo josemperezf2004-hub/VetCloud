@@ -41,7 +41,11 @@ export const authOptions: AuthOptions = {
         const clinica = await prisma.clinica.findUnique({
           where: { id: usuario.clinicaId },
         });
-        if (!clinica || !clinica.activa) return null;
+        // No se bloquea acá por `clinica.activa`/suscripción vencida a propósito:
+        // una clínica recién registrada o con la mensualidad vencida necesita
+        // poder loguearse igual para llegar a `/suscripcion` (el gate real vive
+        // en app/(dashboard)/layout.tsx). Acá solo se valida que la clínica exista.
+        if (!clinica) return null;
 
         return {
           id: usuario.id,
@@ -50,6 +54,7 @@ export const authOptions: AuthOptions = {
           rol: usuario.rol,
           clinicaId: usuario.clinicaId,
           clinicaNombre: clinica.nombre,
+          esSuperAdmin: usuario.esSuperAdmin,
         };
       },
     }),
@@ -61,6 +66,7 @@ export const authOptions: AuthOptions = {
         token.rol = user.rol;
         token.clinicaId = user.clinicaId;
         token.clinicaNombre = user.clinicaNombre;
+        token.esSuperAdmin = user.esSuperAdmin;
       }
       return token;
     },
@@ -70,6 +76,7 @@ export const authOptions: AuthOptions = {
         session.user.rol = token.rol as string;
         session.user.clinicaId = token.clinicaId as string;
         session.user.clinicaNombre = token.clinicaNombre as string;
+        session.user.esSuperAdmin = token.esSuperAdmin as boolean;
       }
       return session;
     },

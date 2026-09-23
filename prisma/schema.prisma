@@ -18,15 +18,16 @@ datasource db {
 // ─── CLÍNICA ──────────────────────────────────────────────────────────────────
 
 model Clinica {
-  id        String   @id @default(cuid())
-  nombre    String
-  email     String   @unique
-  telefono  String?
-  direccion String?
-  logoUrl   String?
-  plan      Plan     @default(BASICO)
-  activa    Boolean  @default(true)
-  creadoEn  DateTime @default(now())
+  id                 String    @id @default(cuid())
+  nombre             String
+  email              String    @unique
+  telefono           String?
+  direccion          String?
+  logoUrl            String?
+  plan               Plan      @default(BASICO)
+  activa             Boolean   @default(true)
+  suscripcionVenceEn DateTime?
+  creadoEn           DateTime  @default(now())
 
   usuarios  Usuario[]
   clientes  Cliente[]
@@ -42,24 +43,42 @@ model Clinica {
 // ─── USUARIOS Y ROLES ─────────────────────────────────────────────────────────
 
 model Usuario {
-  id        String    @id @default(cuid())
-  clinicaId String
-  nombre    String
-  email     String
-  password  String
-  rol       Rol       @default(RECEPCIONISTA)
-  activo    Boolean   @default(true)
-  avatarUrl String?
-  deletedAt DateTime?
-  creadoEn  DateTime  @default(now())
+  id           String    @id @default(cuid())
+  clinicaId    String
+  nombre       String
+  email        String
+  password     String
+  rol          Rol       @default(RECEPCIONISTA)
+  activo       Boolean   @default(true)
+  esSuperAdmin Boolean   @default(false)
+  avatarUrl    String?
+  deletedAt    DateTime?
+  creadoEn     DateTime  @default(now())
 
-  clinica   Clinica           @relation(fields: [clinicaId], references: [id])
-  citas     Cita[]
-  consultas HistoriaClinica[]
+  clinica        Clinica              @relation(fields: [clinicaId], references: [id])
+  citas          Cita[]
+  consultas      HistoriaClinica[]
+  passwordResets PasswordResetToken[]
 
   @@unique([clinicaId, email])
   @@index([clinicaId])
   @@map("usuarios")
+}
+
+// ─── RECUPERACIÓN DE CONTRASEÑA ────────────────────────────────────────────────
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  usuarioId String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usadoEn   DateTime?
+  creadoEn  DateTime  @default(now())
+
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id])
+
+  @@index([usuarioId])
+  @@map("password_reset_tokens")
 }
 
 // ─── CLIENTES (PROPIETARIOS) ──────────────────────────────────────────────────

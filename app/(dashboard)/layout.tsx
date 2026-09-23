@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 
@@ -14,6 +15,21 @@ export default async function DashboardLayout({
 
   if (!session?.user) {
     redirect("/login");
+  }
+
+  // Se consulta en vivo en cada visita (en vez de confiar en el JWT) para que
+  // activar el pago desde /plataforma se refleje sin pedirle al usuario que
+  // cierre y abra sesión de nuevo.
+  const clinica = await prisma.clinica.findUnique({
+    where: { id: session.user.clinicaId },
+    select: { activa: true, suscripcionVenceEn: true },
+  });
+  const suscripcionBloqueada =
+    !clinica?.activa ||
+    !clinica.suscripcionVenceEn ||
+    clinica.suscripcionVenceEn < new Date();
+  if (suscripcionBloqueada) {
+    redirect("/suscripcion");
   }
 
   return (

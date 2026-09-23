@@ -211,15 +211,16 @@ datasource db {
 // ─── CLÍNICA ──────────────────────────────────────────────────────────────────
 
 model Clinica {
-  id          String   @id @default(cuid())
-  nombre      String
-  email       String   @unique
-  telefono    String?
-  direccion   String?
-  logoUrl     String?
-  plan        Plan     @default(BASICO)
-  activa      Boolean  @default(true)
-  creadoEn    DateTime @default(now())
+  id                 String    @id @default(cuid())
+  nombre             String
+  email              String    @unique
+  telefono           String?
+  direccion          String?
+  logoUrl            String?
+  plan               Plan      @default(BASICO)
+  activa             Boolean   @default(true)
+  suscripcionVenceEn DateTime?
+  creadoEn           DateTime  @default(now())
 
   usuarios    Usuario[]
   clientes    Cliente[]
@@ -235,24 +236,42 @@ model Clinica {
 // ─── USUARIOS Y ROLES ─────────────────────────────────────────────────────────
 
 model Usuario {
-  id          String    @id @default(cuid())
-  clinicaId   String
-  nombre      String
-  email       String
-  password    String
-  rol         Rol       @default(RECEPCIONISTA)
-  activo      Boolean   @default(true)
-  avatarUrl   String?
-  deletedAt   DateTime?
-  creadoEn    DateTime  @default(now())
+  id           String    @id @default(cuid())
+  clinicaId    String
+  nombre       String
+  email        String
+  password     String
+  rol          Rol       @default(RECEPCIONISTA)
+  activo       Boolean   @default(true)
+  esSuperAdmin Boolean   @default(false)
+  avatarUrl    String?
+  deletedAt    DateTime?
+  creadoEn     DateTime  @default(now())
 
-  clinica     Clinica   @relation(fields: [clinicaId], references: [id])
-  citas       Cita[]
-  consultas   HistoriaClinica[]
+  clinica        Clinica              @relation(fields: [clinicaId], references: [id])
+  citas          Cita[]
+  consultas      HistoriaClinica[]
+  passwordResets PasswordResetToken[]
 
   @@unique([clinicaId, email])
   @@index([clinicaId])
   @@map("usuarios")
+}
+
+// ─── RECUPERACIÓN DE CONTRASEÑA ────────────────────────────────────────────────
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  usuarioId String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usadoEn   DateTime?
+  creadoEn  DateTime  @default(now())
+
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id])
+
+  @@index([usuarioId])
+  @@map("password_reset_tokens")
 }
 
 // ─── CLIENTES (PROPIETARIOS) ──────────────────────────────────────────────────
@@ -1243,6 +1262,32 @@ Verificado end-to-end contra Supabase real (clínica de prueba `Clinica ConfigTe
 Pedido explícito del usuario. Ya se había dejado anotado el 2026-09-17 que esta categoría faltaba, con dos opciones posibles (reusar `OTRO` o agregar un valor nuevo al enum); se eligió la opción "proper": nuevo valor `EQUIPO` en `CategoriaProducto` (migración `20260923205734_add_categoria_equipo`), con label propio (`ProductoTable.tsx::CATEGORIA_LABELS`), entrada en `CATEGORIAS_PRODUCTO` (`lib/validations.ts`, ya seleccionable en el formulario de producto) y pestaña propia en `CategoriaTabs.tsx` (entre Insumos y Servicios) — a diferencia de Alimento/Accesorio/Otro, que siguen sin pestaña dedicada y viven solo dentro de "Todos", Equipos sí la tiene porque es una categoría con dinámica de uso distinta (no se consume/vende como medicamentos o insumos).
 
 Verificado end-to-end contra Supabase real (clínica de prueba `Clinica EquipoTest`, creada durante la verificación): `npx tsc --noEmit`, `npm run lint` y `npm run build` limpios los tres (tras `npx prisma generate` — el cliente generado no queda al día solo con la migración); producto creado con `categoria: "EQUIPO"` vía `POST /api/inventario` (201); pestaña "Equipos" filtra correctamente (`?categoria=EQUIPO` lo muestra, `?categoria=INSUMO` no); label singular "Equipo" renderiza en la fila de la tabla. El producto de prueba se eliminó (soft delete) al terminar; la clínica de prueba queda en la base, misma convención inofensiva que fases anteriores.
+
+---
+
+### AJUSTE POST-FASE 9 — Suscripción mensual, panel de plataforma y recuperación de contraseña (2026-09-24)
+
+Primera monetización real del producto, pedida explícitamente por el usuario, más un flujo de "olvidé mi contraseña" que nunca existió (confirmado: no había modelo, ruta ni página relacionada antes de este cambio). Tres piezas, diseñadas para no chocar entre sí — ver razonamiento completo discutido con el usuario antes de implementar:
+
+**1. Gate de suscripción, sin cron.** Migración `20260923212835_add_billing_superadmin_password_reset` agrega `Clinica.suscripcionVenceEn DateTime?`. `Clinica.activa` (existía desde el schema original, sin uso real hasta ahora) se reutiliza como el interruptor manual de "habilitada". Bloqueado = `!activa || !suscripcionVenceEn || suscripcionVenceEn < ahora` — se evalúa **en vivo** en `app/(dashboard)/layout.tsx` en cada visita (una query liviana a `Clinica`, no el JWT, para que activar un pago se refleje sin pedir relogin), no con un cron. `app/api/auth/register/route.ts` ahora crea toda `Clinica` nueva con `activa: false` — queda bloqueada hasta el primer pago.
+
+**Corrección importante en `lib/auth.ts`:** se quitó el `if (!clinica.activa) return null` de `authorize()` (se mantiene el chequeo de `usuario.activo`, independiente — personal dado de baja sigue bloqueado igual que antes). Bloquear el login entero por `activa` habría sido un problema del huevo y la gallina: una clínica recién registrada e inactiva nunca podría loguearse para ver el QR de pago. El gate real vive en el layout del dashboard, no en el login.
+
+**`app/suscripcion/page.tsx`** (fuera del route group `(dashboard)`, con su propio shell mínimo — si viviera adentro, el gate del layout la redirigiría a sí misma en loop) muestra el estado de la clínica y el medio de pago: transferencia a Banco Pichincha, cuenta `2209703045`, mensualidad `$11.50 USD` (constantes al tope del archivo, sin nueva infraestructura — un solo plan por ahora). La confirmación de pago es 100% manual (decisión explícita del usuario para no pagar comisión de pasarela) — no hay integración con el banco. Se agregó como ítem de navegación en `components/layout/nav-items.ts` para que clínicas activas también puedan revisar su fecha de vencimiento.
+
+**2. Panel de plataforma (super-admin), no un rol de clínica.** El enum `Rol` es intrínsecamente por-clínica y no encajaba con "dueño de la plataforma, ve todas las clínicas" — se agregó `Usuario.esSuperAdmin Boolean @default(false)`, independiente del rol, en la misma migración. `app/(plataforma)/plataforma/clinicas/page.tsx` (⚠️ el folder de route group `(plataforma)` no aporta segmento de URL — la carpeta real con el segmento `plataforma` está anidada adentro, si no la URL queda en `/clinicas` a secas, error real cometido y corregido durante esta implementación) lista todas las clínicas con su estado y vencimiento (`lib/plataforma.ts::listarClinicasPlataforma`), con botones "Confirmar pago" (`POST /api/plataforma/clinicas/[id]/pago`, extiende `suscripcionVenceEn` un mes desde el mayor entre ahora y el vencimiento actual — una renovación anticipada no pierde días pagados) y "Desactivar" (`POST /api/plataforma/clinicas/[id]/desactivar`, corte manual sin importar la fecha, para casos de abuso). Ambas rutas y el layout `app/(plataforma)/layout.tsx` chequean `session.user.esSuperAdmin` (agregado al JWT/sesión en `lib/auth.ts` y a `types/next-auth.d.ts`), devuelven 403 si no.
+
+**No existe UI para auto-promoverse a super-admin, a propósito.** Se promueve editando la fila directo en la base (se usó un script Node de un solo uso con el cliente `pg`, borrado después de correrse). El usuario (`josemperezf2004@gmail.com`, cuenta de `Clinica PEPITO perez`) quedó marcado `esSuperAdmin: true` en producción.
+
+**3. Recuperación de contraseña — nunca "ver" la contraseña, solo resetearla.** Las contraseñas siguen con `bcrypt` (hash de un solo sentido, desde la Fase 1) — no hay forma de mostrarle a nadie, ni al dueño de la plataforma, la contraseña real de un usuario. Nuevo modelo `PasswordResetToken` (`usuarioId`, `tokenHash` — se guarda el hash SHA-256 del token, nunca el token en texto plano, mismo criterio que `Usuario.password`, `expiresAt`, `usadoEn`). `POST /api/auth/recuperar` responde `{ok:true}` exista o no el email (anti-enumeración), crea un token que vence en 1h y borra tokens previos no usados del mismo usuario. `POST /api/auth/restablecer` valida hash + no vencido + no usado, actualiza la password con bcrypt, marca el token usado. Páginas `app/(auth)/recuperar/page.tsx` y `app/(auth)/restablecer/page.tsx` (mismo estilo visual que login/register), y un link "¿Olvidaste tu contraseña?" nuevo en `app/(auth)/login/page.tsx`.
+
+**`lib/email.ts` (adapter nuevo) usa Gmail SMTP vía `nodemailer`, no Resend** (decisión explícita del usuario: usar su Gmail personal en vez de verificar un dominio propio, para arrancar sin costo — con el caveat conocido de que Gmail limita ~500 envíos/día y no es ideal a mayor escala). Variables nuevas en `.env`: `GMAIL_USER`, `GMAIL_APP_PASSWORD` (contraseña de aplicación de Google, no la contraseña real de la cuenta). **Sin esas dos seteadas, no falla — loguea el link a la consola del servidor en vez de mandar el email de verdad**, así el flujo se puede probar en dev sin credenciales reales. `nodemailer` se instaló explícitamente en `^10.0.10` (no la `7.0.13` que trae `next-auth` como dependencia opcional) porque esa versión vieja tenía varias vulnerabilidades reales (inyección SMTP, bypass de `disableFileAccess`/`disableUrlAccess`) — el `npm ls` marca la resolución como "invalid" por el rango `^7.0.7` que pide `next-auth`, pero es inofensivo: esa dependencia opcional de `next-auth` es solo para su propio `EmailProvider`, que este proyecto no usa (usa `CredentialsProvider`).
+
+**Limpieza de datos de producción (2026-09-24, a pedido explícito del usuario):** de las 19 clínicas que había en la base (todas de pruebas de fases anteriores, más la cuenta real del usuario), se borraron 17 y se conservaron solo dos: `Clínica VetCloud Demo` (`demo@vetcloud.dev` — la más completa por lejos: 3 usuarios, 10 clientes, 15 pacientes, 20 citas, 5 historias, 20 productos, 2 facturas, coincide con el seed de datos que la Fase 9 original tenía planeado) y `Clinica PEPITO perez` (la cuenta real del usuario). El borrado se hizo con un script de un solo uso (`pg` crudo, sin Prisma) porque **ninguna FK de este schema tiene `ON DELETE CASCADE`** (todas son `RESTRICT`) — hubo que borrar en orden de dependencia (items_factura → adjuntos → movimientos_inventario → vacunas → password_reset_tokens → historias_clínicas → citas → facturas → productos → pacientes → clientes → usuarios → clinicas), todo en una sola transacción. Ambas clínicas que quedaron se marcaron con `suscripcionVenceEn` a 1 año vista (no pasan por el flujo de cobro real — son las cuentas de trabajo del propio dueño de la plataforma, no clientes nuevas).
+
+**Nota operativa importante:** tres acciones de esta sesión quedaron bloqueadas por el clasificador automático de seguridad de Claude Code (borrado masivo, auto-modificación de permisos, y otorgamiento de un privilegio de admin) — el usuario las corrió él mismo con el prefijo `!` en el chat. Si en el futuro hace falta otro cambio de datos de este tipo (borrados masivos, promover super-admins), esperar el mismo bloqueo y preparar el script para que el usuario lo corra directamente, en vez de insistir por otras vías.
+
+Verificado end-to-end contra Supabase real (clínicas de prueba creadas y luego borradas junto con el resto en la limpieza de datos): `npx tsc --noEmit`, `npm run lint` y `npm run build` limpios los tres; registro deja `activa:false` y el login igual funciona; `/` redirige a `/suscripcion` cuando está bloqueada y dejar de redirigir apenas se confirma el pago (sin relogin); corte automático confirmado forzando `suscripcionVenceEn` a ayer; recuperación de contraseña probada de punta a punta en modo degradado (link en el log, token de un solo uso, rechazo de token reusado); `/api/plataforma/*` devuelve 403 a un usuario sin `esSuperAdmin`.
 
 ---
 

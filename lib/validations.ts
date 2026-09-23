@@ -20,6 +20,21 @@ export const registerClinicaSchema = z.object({
 
 export type RegisterClinicaInput = z.infer<typeof registerClinicaSchema>;
 
+export const recuperarPasswordSchema = z.object({
+  email: z.string().min(1, "El email es requerido").email("Email inválido"),
+});
+
+export type RecuperarPasswordInput = z.infer<typeof recuperarPasswordSchema>;
+
+export const restablecerPasswordSchema = z.object({
+  token: z.string().min(1, "Token inválido"),
+  password: z
+    .string()
+    .min(8, "La contraseña debe tener al menos 8 caracteres"),
+});
+
+export type RestablecerPasswordInput = z.infer<typeof restablecerPasswordSchema>;
+
 export const clienteSchema = z.object({
   nombre: z.string().min(2, "Ingresa el nombre"),
   apellido: z.string().min(2, "Ingresa el apellido"),

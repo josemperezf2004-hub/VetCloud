@@ -57,6 +57,9 @@ export async function POST(request: Request) {
         nombre: clinicaNombre,
         email: clinicaEmail,
         telefono: clinicaTelefono || null,
+        // Queda inactiva hasta que se confirme el primer pago de la
+        // mensualidad (ver app/(dashboard)/layout.tsx y /suscripcion).
+        activa: false,
       },
     });
 

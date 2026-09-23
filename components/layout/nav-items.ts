@@ -8,6 +8,7 @@ import {
   Package,
   Receipt,
   Settings,
+  CreditCard,
 } from "lucide-react";
 
 // Sin "use client": lo consumen Sidebar.tsx y MobileNav.tsx (ambos clientes,
@@ -25,6 +26,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/historia-clinica", label: "Historia Clínica", icon: FileText },
   { href: "/inventario", label: "Inventario", icon: Package },
   { href: "/facturacion", label: "Facturación", icon: Receipt },
+  { href: "/suscripcion", label: "Suscripción", icon: CreditCard },
   { href: "/configuracion", label: "Configuración", icon: Settings },
 ];
 
