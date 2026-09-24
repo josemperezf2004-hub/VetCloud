@@ -50,7 +50,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Propietario no encontrado" }, { status: 404 });
   }
 
-  const factura = await crearFactura(session.user.clinicaId, parsed.data);
-
-  return NextResponse.json(factura, { status: 201 });
+  try {
+    const factura = await crearFactura(session.user.clinicaId, parsed.data);
+    return NextResponse.json(factura, { status: 201 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "No se pudo crear la factura";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
 }

@@ -33,8 +33,8 @@ export default async function FacturacionPage({
     }),
     getEstadisticasFacturacion(session!.user.clinicaId),
     clienteId
-      ? prisma.cliente.findUnique({
-          where: { id: clienteId },
+      ? prisma.cliente.findFirst({
+          where: { id: clienteId, clinicaId: session!.user.clinicaId },
           select: { nombre: true, apellido: true },
         })
       : null,

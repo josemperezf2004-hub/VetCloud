@@ -154,7 +154,34 @@ export async function crearFactura(clinicaId: string, data: FacturaInput) {
     const totalExistentes = await tx.factura.count({ where: { clinicaId } });
     const numero = `F-${new Date().getFullYear()}-${String(totalExistentes + 1).padStart(6, "0")}`;
 
-    const subtotal = data.items.reduce((acc, item) => acc + item.cantidad * item.precioUnit, 0);
+    // Los items con productoId no confían en el precio que manda el cliente:
+    // se valida que el producto sea de esta clínica y se recalcula precioUnit
+    // desde Producto.precioVenta, igual que hace el borrador de facturación
+    // (generarBorradorDesdeHistoria) al armar la factura. Los items sin
+    // productoId (servicios libres) no tienen un precio de referencia en el
+    // servidor, así que ahí sí se usa el precioUnit que manda el formulario.
+    const productoIds = [...new Set(data.items.map((i) => i.productoId).filter((id): id is string => !!id))];
+    const productos = productoIds.length
+      ? await tx.producto.findMany({
+          where: { id: { in: productoIds }, clinicaId },
+          select: { id: true, precioVenta: true },
+        })
+      : [];
+    const precioPorId = new Map(productos.map((p) => [p.id, p.precioVenta]));
+    for (const id of productoIds) {
+      if (!precioPorId.has(id)) {
+        throw new Error("Uno de los productos de la factura no existe en esta clínica");
+      }
+    }
+
+    const items = data.items.map((item) => ({
+      productoId: item.productoId || null,
+      descripcion: item.descripcion,
+      cantidad: item.cantidad,
+      precioUnit: item.productoId ? precioPorId.get(item.productoId)! : item.precioUnit,
+    }));
+
+    const subtotal = items.reduce((acc, item) => acc + item.cantidad * item.precioUnit, 0);
     const total = Math.max(0, subtotal - data.descuento);
 
     return tx.factura.create({
@@ -167,11 +194,8 @@ export async function crearFactura(clinicaId: string, data: FacturaInput) {
         total,
         notas: data.notas || null,
         items: {
-          create: data.items.map((item) => ({
-            productoId: item.productoId || null,
-            descripcion: item.descripcion,
-            cantidad: item.cantidad,
-            precioUnit: item.precioUnit,
+          create: items.map((item) => ({
+            ...item,
             subtotal: item.cantidad * item.precioUnit,
           })),
         },
