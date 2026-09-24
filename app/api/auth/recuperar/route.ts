@@ -43,7 +43,14 @@ export async function POST(request: Request) {
     ]);
 
     const link = `${process.env.NEXTAUTH_URL}/restablecer?token=${token}`;
-    await enviarEmailRecuperacion(usuario.email, link);
+    try {
+      await enviarEmailRecuperacion(usuario.email, link);
+    } catch (err) {
+      // No dejar que una falla de envío (SMTP caído, red, etc.) devuelva un
+      // status distinto al caso "email no registrado" — eso rompería el
+      // anti-enumeración de este endpoint.
+      console.error("[recuperar] fallo al enviar email de recuperación:", err);
+    }
   }
 
   return NextResponse.json({ ok: true });

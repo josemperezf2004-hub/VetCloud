@@ -45,7 +45,7 @@ export async function enviarEmailRecuperacion(destinatario: string, link: string
     destinatario,
     "Recupera tu contraseña de VetCloud",
     `<p>Recibimos una solicitud para restablecer tu contraseña de VetCloud.</p>
-     <p><a href="${link}">Hace clic aquí para crear una nueva contraseña</a></p>
-     <p>Este enlace vence en 1 hora. Si no solicitaste esto, podés ignorar este email.</p>`
+     <p><a href="${link}">Haz clic aquí para crear una nueva contraseña</a></p>
+     <p>Este enlace vence en 1 hora. Si no solicitaste esto, puedes ignorar este email.</p>`
   );
 }
