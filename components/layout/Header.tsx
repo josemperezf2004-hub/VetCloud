@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Bell } from "lucide-react";
 
 import { MobileNav } from "@/components/layout/MobileNav";
 
@@ -66,13 +65,6 @@ export function Header({
             {format(ahora, "EEEE d 'de' MMMM, HH:mm", { locale: es })}
           </span>
         )}
-
-        <button
-          aria-label="Notificaciones"
-          className="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
-        >
-          <Bell className="size-5" />
-        </button>
       </div>
     </header>
   );
