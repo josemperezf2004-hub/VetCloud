@@ -48,7 +48,7 @@ export async function PUT(
   // el PUT de citas para el cambio de estado.
   if (typeof body === "object" && body !== null && "metodoPago" in body) {
     if (existente.estado === "PAGADA") {
-      return NextResponse.json({ error: "La factura ya está pagada" }, { status: 400 });
+      return NextResponse.json({ error: "El recibo ya está pagado" }, { status: 400 });
     }
 
     const parsed = facturaPagoSchema.safeParse(body);

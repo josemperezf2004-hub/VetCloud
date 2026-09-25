@@ -35,7 +35,7 @@ export default async function NuevaFacturaPage({
         >
           <ArrowLeft className="size-4" />
         </Link>
-        <h1 className="text-xl font-semibold text-gray-900">Nueva factura</h1>
+        <h1 className="text-xl font-semibold text-gray-900">Nuevo recibo</h1>
       </div>
 
       <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">

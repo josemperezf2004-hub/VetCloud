@@ -164,13 +164,13 @@ export default async function ClienteDetallePage({
         </h2>
         {cliente.facturas.length === 0 ? (
           <p className="py-6 text-center text-sm text-gray-400">
-            Este propietario todavía no tiene facturas registradas.
+            Este propietario todavía no tiene recibos registrados.
           </p>
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Factura</TableHead>
+                <TableHead>Recibo</TableHead>
                 <TableHead>Fecha</TableHead>
                 <TableHead>Total</TableHead>
                 <TableHead>Estado</TableHead>

@@ -24,8 +24,7 @@ export function EvolucionIngresos({
 
       {totalMes === 0 ? (
         <p className="py-10 text-center text-sm text-gray-400">
-          Aún no hay facturas este mes. Este gráfico se llena solo en cuanto
-          exista un módulo de Facturación (Fase 8) — la consulta ya está lista.
+          Aún no hay movimientos de caja este mes.
         </p>
       ) : (
         <div className="relative">

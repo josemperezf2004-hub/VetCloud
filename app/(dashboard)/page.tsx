@@ -180,12 +180,12 @@ export default async function DashboardPage() {
           <RankingLista
             titulo="Servicios más utilizados"
             items={servicios}
-            emptyMessage="Aún no hay servicios facturados este mes."
+            emptyMessage="Aún no hay servicios cobrados este mes."
           />
           <RankingLista
             titulo="Productos más vendidos"
             items={productos}
-            emptyMessage="Aún no hay productos facturados este mes."
+            emptyMessage="Aún no hay productos cobrados este mes."
             sufijo=" u."
           />
         </div>

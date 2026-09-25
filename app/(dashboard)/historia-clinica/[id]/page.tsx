@@ -54,7 +54,7 @@ export default async function ConsultaDetallePage({
           <Button asChild variant="outline">
             <Link href={`/facturacion/nueva?historiaId=${historia.id}`}>
               <Receipt className="size-4" />
-              Generar factura
+              Generar recibo
             </Link>
           </Button>
           <BotonImprimir />

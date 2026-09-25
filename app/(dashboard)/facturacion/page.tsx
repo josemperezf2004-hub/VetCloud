@@ -54,11 +54,11 @@ export default async function FacturacionPage({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-gray-900">Facturación</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">Caja</h1>
         <Button asChild className="bg-[#0F6E56] hover:bg-[#1D9E75] text-white">
           <Link href="/facturacion/nueva">
             <Plus className="size-4" />
-            Nueva factura
+            Nuevo recibo
           </Link>
         </Button>
       </div>
@@ -101,7 +101,7 @@ export default async function FacturacionPage({
         {data.total > data.pageSize && (
           <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3">
             <p className="text-xs text-gray-500">
-              Página {data.page} de {totalPaginas} · {data.total} facturas
+              Página {data.page} de {totalPaginas} · {data.total} recibos
             </p>
             <div className="flex gap-2">
               {data.page > 1 ? (

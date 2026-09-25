@@ -41,13 +41,13 @@ export function FacturaTable({
     return (
       <EmptyState
         icon={Receipt}
-        title={filtrado ? "No se encontraron facturas" : "Todavía no hay facturas"}
+        title={filtrado ? "No se encontraron recibos" : "Todavía no hay recibos"}
         description={
           filtrado
             ? "Prueba con otro estado, fecha o cliente."
-            : "Genera la primera factura desde una consulta o crea una nueva manualmente."
+            : "Genera el primer recibo desde una consulta o crea uno nuevo manualmente."
         }
-        action={filtrado ? undefined : { label: "Nueva factura", href: "/facturacion/nueva" }}
+        action={filtrado ? undefined : { label: "Nuevo recibo", href: "/facturacion/nueva" }}
       />
     );
   }

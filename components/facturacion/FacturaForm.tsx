@@ -67,14 +67,14 @@ export function FacturaForm({
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        toast.error("No se pudo crear la factura", {
+        toast.error("No se pudo crear el recibo", {
           description: data.error ?? "Intenta de nuevo.",
         });
         return;
       }
 
       const factura = await res.json();
-      toast.success("Factura creada");
+      toast.success("Recibo creado");
       router.push(`/facturacion/${factura.id}`);
     } finally {
       setLoading(false);
@@ -144,7 +144,7 @@ export function FacturaForm({
             <FormItem>
               <FormLabel>Notas</FormLabel>
               <FormControl>
-                <Textarea placeholder="Notas internas sobre esta factura" rows={2} {...field} />
+                <Textarea placeholder="Notas internas sobre este recibo" rows={2} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -157,7 +157,7 @@ export function FacturaForm({
           className="bg-[#0F6E56] hover:bg-[#1D9E75] text-white"
         >
           {loading && <Loader2 className="size-4 animate-spin" />}
-          Crear factura
+          Crear recibo
         </Button>
       </form>
     </Form>

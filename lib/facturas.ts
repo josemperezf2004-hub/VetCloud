@@ -170,7 +170,7 @@ export async function crearFactura(clinicaId: string, data: FacturaInput) {
     const precioPorId = new Map(productos.map((p) => [p.id, p.precioVenta]));
     for (const id of productoIds) {
       if (!precioPorId.has(id)) {
-        throw new Error("Uno de los productos de la factura no existe en esta clínica");
+        throw new Error("Uno de los productos del recibo no existe en esta clínica");
       }
     }
 

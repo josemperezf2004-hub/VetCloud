@@ -15,7 +15,7 @@ const SECTION_LABELS: Record<string, string> = {
   "/agenda": "Agenda",
   "/historia-clinica": "Historia Clínica",
   "/inventario": "Inventario",
-  "/facturacion": "Facturación",
+  "/facturacion": "Caja",
   "/configuracion": "Configuración",
 };
 

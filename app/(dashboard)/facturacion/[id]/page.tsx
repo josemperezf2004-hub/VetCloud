@@ -53,7 +53,7 @@ export default async function FacturaDetallePage({
           >
             <ArrowLeft className="size-4" />
           </Link>
-          <h1 className="text-xl font-semibold text-gray-900">Factura {factura.numero}</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Recibo {factura.numero}</h1>
         </div>
         <div className="flex gap-2">
           {factura.estado === "PENDIENTE" && (

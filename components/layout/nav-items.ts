@@ -25,7 +25,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/agenda", label: "Agenda", icon: Calendar },
   { href: "/historia-clinica", label: "Historia Clínica", icon: FileText },
   { href: "/inventario", label: "Inventario", icon: Package },
-  { href: "/facturacion", label: "Facturación", icon: Receipt },
+  { href: "/facturacion", label: "Caja", icon: Receipt },
   { href: "/suscripcion", label: "Suscripción", icon: CreditCard },
   { href: "/configuracion", label: "Configuración", icon: Settings },
 ];
