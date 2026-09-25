@@ -44,7 +44,7 @@ function RestablecerFormulario() {
         toast.error(data.error ?? "No se pudo restablecer la contraseña");
         return;
       }
-      toast.success("Contraseña actualizada, ya podés iniciar sesión");
+      toast.success("Contraseña actualizada, ya puedes iniciar sesión");
       router.push("/login");
     } finally {
       setLoading(false);

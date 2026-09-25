@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { PawPrint, CircleAlert, Landmark } from "lucide-react";
+import { PawPrint, CircleAlert, CircleCheck, Landmark, ArrowLeft } from "lucide-react";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -29,12 +30,7 @@ export default async function SuscripcionPage() {
   const nuncaPago = !clinica.suscripcionVenceEn;
   const vencida =
     !nuncaPago && clinica.suscripcionVenceEn! < new Date();
-
-  // Si ya está todo al día, no tiene sentido quedarse en esta pantalla.
   const alDia = clinica.activa && !nuncaPago && !vencida;
-  if (alDia) {
-    redirect("/");
-  }
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center bg-gray-50 px-4 py-12">
@@ -48,26 +44,42 @@ export default async function SuscripcionPage() {
         </div>
 
         <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-          <div className="flex items-start gap-3 rounded-lg bg-[#FFF3CC] p-4 text-[#D97706]">
-            <CircleAlert className="size-5 shrink-0" />
-            <div className="text-sm">
-              {nuncaPago ? (
+          {alDia ? (
+            <div className="flex items-start gap-3 rounded-lg bg-[#16A34A]/10 p-4 text-[#16A34A]">
+              <CircleCheck className="size-5 shrink-0" />
+              <div className="text-sm">
                 <p>
-                  <strong>{clinica.nombre}</strong> todavía no tiene la
-                  suscripción activada. Activala con el primer pago para
-                  acceder al sistema.
-                </p>
-              ) : (
-                <p>
-                  La suscripción de <strong>{clinica.nombre}</strong> venció el{" "}
+                  <strong>{clinica.nombre}</strong> está al día. La
+                  suscripción vence el{" "}
                   {format(clinica.suscripcionVenceEn!, "d 'de' MMMM 'de' yyyy", {
                     locale: es,
                   })}
-                  . Renovala para recuperar el acceso.
+                  .
                 </p>
-              )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex items-start gap-3 rounded-lg bg-[#FFF3CC] p-4 text-[#D97706]">
+              <CircleAlert className="size-5 shrink-0" />
+              <div className="text-sm">
+                {nuncaPago ? (
+                  <p>
+                    <strong>{clinica.nombre}</strong> todavía no tiene la
+                    suscripción activada. Actívala con el primer pago para
+                    acceder al sistema.
+                  </p>
+                ) : (
+                  <p>
+                    La suscripción de <strong>{clinica.nombre}</strong> venció el{" "}
+                    {format(clinica.suscripcionVenceEn!, "d 'de' MMMM 'de' yyyy", {
+                      locale: es,
+                    })}
+                    . Renuévala para recuperar el acceso.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="mt-6 space-y-4">
             <h1 className="text-lg font-semibold text-gray-900">
@@ -85,10 +97,20 @@ export default async function SuscripcionPage() {
             </div>
 
             <p className="text-sm text-gray-500">
-              Una vez hecha la transferencia, enviá el comprobante al equipo
-              de VetCloud para que activemos (o renovemos) tu cuenta. La
-              activación es manual — puede tardar hasta un día hábil.
+              {alDia
+                ? "Para renovar antes del vencimiento, realiza la transferencia y envía el comprobante al equipo de VetCloud — la activación es manual y puede tardar hasta un día hábil."
+                : "Una vez hecha la transferencia, envía el comprobante al equipo de VetCloud para que activemos (o renovemos) tu cuenta. La activación es manual — puede tardar hasta un día hábil."}
             </p>
+
+            {alDia && (
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0F6E56] hover:underline"
+              >
+                <ArrowLeft className="size-4" />
+                Volver al Dashboard
+              </Link>
+            )}
           </div>
         </div>
       </div>
