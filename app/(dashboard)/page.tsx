@@ -72,11 +72,27 @@ export default async function DashboardPage() {
     getControlesProximos(clinicaId),
   ]);
 
+  // El servidor corre en UTC (Netlify Functions); sin fijar la zona horaria,
+  // tanto la fecha mostrada como la hora usada para el saludo terminaban
+  // siendo las de UTC, no las de Ecuador — cerca de la medianoche Ecuador
+  // (19:00-00:00 hora local) eso mostraba el día siguiente y "Buenos días"
+  // a cualquier hora real del día.
   const hoy = new Intl.DateTimeFormat("es", {
     weekday: "long",
     day: "numeric",
     month: "long",
+    timeZone: "America/Guayaquil",
   }).format(new Date());
+
+  const horaEcuador = Number(
+    new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      hourCycle: "h23",
+      timeZone: "America/Guayaquil",
+    }).format(new Date())
+  );
+  const saludo =
+    horaEcuador < 12 ? "Buenos días" : horaEcuador < 19 ? "Buenas tardes" : "Buenas noches";
 
   const nombreMes = new Intl.DateTimeFormat("es", {
     month: "long",
@@ -92,7 +108,7 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold text-gray-900">
-          Buenos días{nombre ? `, ${nombre}` : ""}
+          {saludo}{nombre ? `, ${nombre}` : ""}
         </h1>
         <p className="text-sm capitalize text-gray-500">{hoy}</p>
       </div>

@@ -38,13 +38,19 @@ export async function POST(
     );
   }
 
+  // Los inputs son "YYYY-MM-DD" (fecha sin hora); `new Date(string)` los
+  // interpreta como medianoche UTC, que no es medianoche en Ecuador (UTC-5)
+  // — se ancla explícitamente a medianoche Ecuador para que coincida con las
+  // ventanas "hoy" / "próximos 15 días" de lib/dashboard.ts.
   const mantenimiento = await prisma.mantenimientoEquipo.create({
     data: {
       productoId: producto.id,
       tipo: parsed.data.tipo,
       proveedor: parsed.data.proveedor || null,
-      realizadoEn: new Date(parsed.data.realizadoEn),
-      proximoEn: parsed.data.proximoEn ? new Date(parsed.data.proximoEn) : null,
+      realizadoEn: new Date(`${parsed.data.realizadoEn}T00:00:00-05:00`),
+      proximoEn: parsed.data.proximoEn
+        ? new Date(`${parsed.data.proximoEn}T00:00:00-05:00`)
+        : null,
       costo: parsed.data.costo ?? null,
       notas: parsed.data.notas || null,
     },

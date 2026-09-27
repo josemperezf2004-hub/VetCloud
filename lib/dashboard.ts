@@ -1,15 +1,21 @@
 import { prisma } from "@/lib/prisma";
 
+// América/Guayaquil es UTC-5 fijo, sin horario de verano — mismo criterio que
+// lib/recordatorios.ts. En producción (Netlify Functions) el proceso corre en
+// UTC, así que "hoy" calculado con setHours(0,0,0,0) usaba el día calendario
+// de UTC, no el de Ecuador — desde las 19:00 hasta la medianoche hora Ecuador,
+// UTC ya está en el día siguiente, adelantando 24h todas las ventanas "hoy" /
+// "próximos N días" del dashboard (vacunas, mantenimientos, etc.).
+const OFFSET_HORAS_ECUADOR = 5;
+
 export function inicioHoy() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
+  const local = new Date(Date.now() - OFFSET_HORAS_ECUADOR * 60 * 60 * 1000);
+  const inicioUTC = Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate());
+  return new Date(inicioUTC + OFFSET_HORAS_ECUADOR * 60 * 60 * 1000);
 }
 
 export function finHoy() {
-  const d = new Date();
-  d.setHours(23, 59, 59, 999);
-  return d;
+  return new Date(inicioHoy().getTime() + 24 * 60 * 60 * 1000 - 1);
 }
 
 async function contarMetricasDelDia(clinicaId: string, inicio: Date, fin: Date) {
@@ -86,7 +92,7 @@ export async function getEstadisticasHoy(clinicaId: string) {
     prisma.vacuna.count({
       where: {
         deletedAt: null,
-        paciente: { clinicaId },
+        paciente: { clinicaId, deletedAt: null },
         proximaDosis: { gte: inicio, lte: en15Dias },
       },
     }),
@@ -96,7 +102,7 @@ export async function getEstadisticasHoy(clinicaId: string) {
     prisma.mantenimientoEquipo.count({
       where: {
         deletedAt: null,
-        producto: { clinicaId },
+        producto: { clinicaId, deletedAt: null },
         proximoEn: { gte: inicio, lte: en15Dias },
       },
     }),
@@ -146,7 +152,7 @@ export async function getProximasVacunasDetalle(clinicaId: string, limite = 5) {
   return prisma.vacuna.findMany({
     where: {
       deletedAt: null,
-      paciente: { clinicaId },
+      paciente: { clinicaId, deletedAt: null },
       proximaDosis: { gte: inicio, lte: en15Dias },
     },
     orderBy: { proximaDosis: "asc" },
@@ -173,7 +179,7 @@ export async function getProximosMantenimientos(clinicaId: string, limite = 5) {
   return prisma.mantenimientoEquipo.findMany({
     where: {
       deletedAt: null,
-      producto: { clinicaId },
+      producto: { clinicaId, deletedAt: null },
       proximoEn: { gte: inicio, lte: en15Dias },
     },
     orderBy: { proximoEn: "asc" },
