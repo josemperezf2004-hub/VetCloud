@@ -45,6 +45,9 @@ export function ProductoRow({ producto }: { producto: ProductoItem }) {
   const [registrandoMantenimiento, setRegistrandoMantenimiento] = useState(false);
 
   const proximoMantenimiento = producto.mantenimientos[0]?.proximoEn ?? null;
+  // EQUIPO y SERVICIO no se consumen/reponen como el resto del inventario —
+  // "stock bajo"/"sin stock" no son alertas reales para ellos.
+  const sinAlertaDeStock = producto.categoria === "EQUIPO" || producto.categoria === "SERVICIO";
 
   async function handleEditar(values: ProductoInput) {
     const res = await fetch(`/api/inventario/${producto.id}`, {
@@ -99,10 +102,14 @@ export function ProductoRow({ producto }: { producto: ProductoItem }) {
             <span className="font-mono text-sm text-gray-900">
               {producto.stockActual} {producto.unidad}
             </span>
-            <StockBadge stockActual={producto.stockActual} stockMinimo={producto.stockMinimo} />
+            {!sinAlertaDeStock && (
+              <StockBadge stockActual={producto.stockActual} stockMinimo={producto.stockMinimo} />
+            )}
           </div>
         </TableCell>
-        <TableCell className="font-mono text-gray-600">{producto.stockMinimo}</TableCell>
+        <TableCell className="font-mono text-gray-600">
+          {sinAlertaDeStock ? "—" : producto.stockMinimo}
+        </TableCell>
         <TableCell className="font-mono text-gray-600">
           ${formatoMoneda.format(producto.precioVenta)}
         </TableCell>

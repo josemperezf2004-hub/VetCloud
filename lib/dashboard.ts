@@ -51,7 +51,9 @@ async function contarMetricasDelDia(clinicaId: string, inicio: Date, fin: Date) 
 
 export async function getProductosStockBajo(clinicaId: string) {
   const productos = await prisma.producto.findMany({
-    where: { clinicaId, activo: true, deletedAt: null },
+    // EQUIPO y SERVICIO no se consumen/reponen como el resto del inventario —
+    // "stock bajo" no es una alerta real para ellos, se excluyen del todo.
+    where: { clinicaId, activo: true, deletedAt: null, categoria: { notIn: ["EQUIPO", "SERVICIO"] } },
     select: {
       id: true,
       nombre: true,
