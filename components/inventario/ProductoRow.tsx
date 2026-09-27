@@ -37,7 +37,13 @@ function colorProximoMantenimiento(fecha: Date): string {
   return "text-gray-400";
 }
 
-export function ProductoRow({ producto }: { producto: ProductoItem }) {
+export function ProductoRow({
+  producto,
+  mostrarStockMinimo = true,
+}: {
+  producto: ProductoItem;
+  mostrarStockMinimo?: boolean;
+}) {
   const router = useRouter();
   const [editando, setEditando] = useState(false);
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
@@ -107,9 +113,11 @@ export function ProductoRow({ producto }: { producto: ProductoItem }) {
             )}
           </div>
         </TableCell>
-        <TableCell className="font-mono text-gray-600">
-          {sinAlertaDeStock ? "—" : producto.stockMinimo}
-        </TableCell>
+        {mostrarStockMinimo && (
+          <TableCell className="font-mono text-gray-600">
+            {sinAlertaDeStock ? "—" : producto.stockMinimo}
+          </TableCell>
+        )}
         <TableCell className="font-mono text-gray-600">
           ${formatoMoneda.format(producto.precioVenta)}
         </TableCell>

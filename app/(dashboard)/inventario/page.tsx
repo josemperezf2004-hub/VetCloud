@@ -72,7 +72,11 @@ export default async function InventarioPage({
           <CategoriaTabs activa={categoriaActiva} q={q} />
         </div>
 
-        <ProductoTable productos={data.productos} filtrado={Boolean(q) || categoriaActiva !== "TODOS"} />
+        <ProductoTable
+          productos={data.productos}
+          filtrado={Boolean(q) || categoriaActiva !== "TODOS"}
+          categoriaActiva={categoriaActiva}
+        />
 
         {data.total > data.pageSize && (
           <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3">
