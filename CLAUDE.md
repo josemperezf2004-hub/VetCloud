@@ -1239,7 +1239,9 @@ Verificado con `npx tsc --noEmit`, `npm run lint` y `npm run build` (los tres li
 - Cero errores en consola
 - RLS verificado con múltiples tenants
 
-**Estado real del despliegue:** el despliegue a Vercel (paso 7) ya se hizo (ver commit y notas del 2026-09-17: repo en GitHub `josemperezf2004-hub/VetCloud`, auto-deploy desde `main`). Las tareas 1-6 (empty states, loading states por módulo, error boundaries por página, pasada responsive completa, auditoría de aislamiento multi-tenant módulo por módulo, seed script) no se han verificado formalmente una por una — se van cerrando de forma incremental a pedido del usuario en vez de como una fase única. No marcar "Fase 9: completada" hasta repasar ese checklist explícitamente.
+**Estado real del despliegue:** el despliegue a Vercel (paso 7) ya se hizo (ver commit y notas del 2026-09-17: repo en GitHub `josemperezf2004-hub/VetCloud`, auto-deploy desde `main`). Las tareas 1-6 (empty states, loading states por módulo, error boundaries por página, pasada responsive completa, auditoría de aislamiento multi-tenant módulo por módulo, seed script) se cerraron de forma incremental a pedido del usuario en vez de como una fase única — ver el detalle de cada una en las notas del 2026-09-24 (estados vacíos, loading, error boundaries, seed, auditoría multi-tenant con dos bugs reales encontrados y corregidos) y la pasada responsive del 2026-09-26 (768px/375px vía Claude in Chrome sobre Dashboard, Clientes, Pacientes, Agenda, Historia Clínica, Inventario, Caja, Configuración y Suscripción — sin overflows de página; el scroll horizontal contenido en tablas y el calendario semanal es el patrón correcto, no un bug).
+
+**Estado: completado** (2026-09-26). Los 6 ítems del checklist están verificados uno por uno. Fase 9 cerrada.
 
 ---
 
