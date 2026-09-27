@@ -39,9 +39,11 @@ function colorProximoMantenimiento(fecha: Date): string {
 
 export function ProductoRow({
   producto,
+  mostrarStockActual = true,
   mostrarStockMinimo = true,
 }: {
   producto: ProductoItem;
+  mostrarStockActual?: boolean;
   mostrarStockMinimo?: boolean;
 }) {
   const router = useRouter();
@@ -103,16 +105,18 @@ export function ProductoRow({
         <TableCell className="text-gray-600">
           {CATEGORIA_LABELS[producto.categoria] ?? producto.categoria}
         </TableCell>
-        <TableCell>
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-sm text-gray-900">
-              {producto.stockActual} {producto.unidad}
-            </span>
-            {!sinAlertaDeStock && (
-              <StockBadge stockActual={producto.stockActual} stockMinimo={producto.stockMinimo} />
-            )}
-          </div>
-        </TableCell>
+        {mostrarStockActual && (
+          <TableCell>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-sm text-gray-900">
+                {producto.stockActual} {producto.unidad}
+              </span>
+              {!sinAlertaDeStock && (
+                <StockBadge stockActual={producto.stockActual} stockMinimo={producto.stockMinimo} />
+              )}
+            </div>
+          </TableCell>
+        )}
         {mostrarStockMinimo && (
           <TableCell className="font-mono text-gray-600">
             {sinAlertaDeStock ? "—" : producto.stockMinimo}

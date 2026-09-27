@@ -51,6 +51,9 @@ export function ProductoTable({
   // categorías no se consumen/reponen), así que la columna directamente no
   // se muestra ahí — en "Todos" y el resto de pestañas sigue siendo relevante.
   const mostrarStockMinimo = categoriaActiva !== "EQUIPO" && categoriaActiva !== "SERVICIO";
+  // Servicios ni siquiera tiene una cantidad física que "tener en existencia"
+  // (a diferencia de Equipos, donde sí hay una unidad real, ej. 1 báscula).
+  const mostrarStockActual = categoriaActiva !== "SERVICIO";
 
   return (
     <Table>
@@ -58,7 +61,7 @@ export function ProductoTable({
         <TableRow>
           <TableHead>Nombre</TableHead>
           <TableHead>Categoría</TableHead>
-          <TableHead>Stock actual</TableHead>
+          {mostrarStockActual && <TableHead>Stock actual</TableHead>}
           {mostrarStockMinimo && <TableHead>Stock mínimo</TableHead>}
           <TableHead>Precio</TableHead>
           <TableHead className="text-right">Acciones</TableHead>
@@ -66,7 +69,12 @@ export function ProductoTable({
       </TableHeader>
       <TableBody>
         {productos.map((producto) => (
-          <ProductoRow key={producto.id} producto={producto} mostrarStockMinimo={mostrarStockMinimo} />
+          <ProductoRow
+            key={producto.id}
+            producto={producto}
+            mostrarStockActual={mostrarStockActual}
+            mostrarStockMinimo={mostrarStockMinimo}
+          />
         ))}
       </TableBody>
     </Table>
