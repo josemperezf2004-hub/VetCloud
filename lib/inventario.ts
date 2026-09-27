@@ -30,6 +30,17 @@ export async function listarProductos(
       orderBy: { nombre: "asc" },
       skip: (paginaActual - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
+      include: {
+        // Solo el mantenimiento más reciente por producto, en la misma query
+        // (sin N+1) — únicamente relevante para categoría EQUIPO, vacío para
+        // el resto.
+        mantenimientos: {
+          where: { deletedAt: null },
+          orderBy: { creadoEn: "desc" },
+          take: 1,
+          select: { proximoEn: true },
+        },
+      },
     }),
     prisma.producto.count({ where }),
   ]);

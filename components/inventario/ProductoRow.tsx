@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Wrench } from "lucide-react";
 import { toast } from "sonner";
 
 import { TableRow, TableCell } from "@/components/ui/table";
@@ -17,6 +17,7 @@ import {
 import { StockBadge } from "@/components/inventario/StockBadge";
 import { CATEGORIA_LABELS, type ProductoItem } from "@/components/inventario/ProductoTable";
 import { ProductoForm } from "@/components/inventario/ProductoForm";
+import { RegistrarMantenimientoDialog } from "@/components/inventario/RegistrarMantenimientoDialog";
 import type { ProductoInput } from "@/lib/validations";
 
 const formatoMoneda = new Intl.NumberFormat("es", {
@@ -24,11 +25,26 @@ const formatoMoneda = new Intl.NumberFormat("es", {
   maximumFractionDigits: 2,
 });
 
+const formatoFecha = new Intl.DateTimeFormat("es", { day: "numeric", month: "short", year: "numeric" });
+
+// Mismo criterio de "próximo" que el resto del dashboard (ventana de 15 días).
+function colorProximoMantenimiento(fecha: Date): string {
+  const hoy = new Date();
+  const en15Dias = new Date(hoy);
+  en15Dias.setDate(en15Dias.getDate() + 15);
+  if (fecha < hoy) return "text-[#DC2626]";
+  if (fecha <= en15Dias) return "text-[#D97706]";
+  return "text-gray-400";
+}
+
 export function ProductoRow({ producto }: { producto: ProductoItem }) {
   const router = useRouter();
   const [editando, setEditando] = useState(false);
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
   const [eliminando, setEliminando] = useState(false);
+  const [registrandoMantenimiento, setRegistrandoMantenimiento] = useState(false);
+
+  const proximoMantenimiento = producto.mantenimientos[0]?.proximoEn ?? null;
 
   async function handleEditar(values: ProductoInput) {
     const res = await fetch(`/api/inventario/${producto.id}`, {
@@ -69,6 +85,11 @@ export function ProductoRow({ producto }: { producto: ProductoItem }) {
         <TableCell>
           <div className="font-medium text-gray-900">{producto.nombre}</div>
           {producto.sku && <div className="text-xs text-gray-400">SKU: {producto.sku}</div>}
+          {proximoMantenimiento && (
+            <div className={`text-xs ${colorProximoMantenimiento(proximoMantenimiento)}`}>
+              Próximo mantenimiento: {formatoFecha.format(proximoMantenimiento)}
+            </div>
+          )}
         </TableCell>
         <TableCell className="text-gray-600">
           {CATEGORIA_LABELS[producto.categoria] ?? producto.categoria}
@@ -87,6 +108,16 @@ export function ProductoRow({ producto }: { producto: ProductoItem }) {
         </TableCell>
         <TableCell className="text-right">
           <div className="flex justify-end gap-1">
+            {producto.categoria === "EQUIPO" && (
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Registrar mantenimiento"
+                onClick={() => setRegistrandoMantenimiento(true)}
+              >
+                <Wrench className="size-4" />
+              </Button>
+            )}
             <Button variant="ghost" size="icon" onClick={() => setEditando(true)}>
               <Pencil className="size-4" />
             </Button>
@@ -144,6 +175,14 @@ export function ProductoRow({ producto }: { producto: ProductoItem }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {producto.categoria === "EQUIPO" && (
+        <RegistrarMantenimientoDialog
+          productoId={producto.id}
+          open={registrandoMantenimiento}
+          onOpenChange={setRegistrandoMantenimiento}
+        />
+      )}
     </>
   );
 }

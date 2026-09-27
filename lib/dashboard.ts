@@ -66,28 +66,41 @@ export async function getEstadisticasHoy(clinicaId: string) {
   const en15Dias = new Date(inicio);
   en15Dias.setDate(en15Dias.getDate() + 15);
 
-  const [metricasDelDia, citasCompletadas, stockBajo, proximasVacunas, clientesNuevos] =
-    await Promise.all([
-      contarMetricasDelDia(clinicaId, inicio, fin),
-      prisma.cita.count({
-        where: {
-          clinicaId,
-          fechaHora: { gte: inicio, lte: fin },
-          estado: "COMPLETADA",
-        },
-      }),
-      getProductosStockBajo(clinicaId),
-      prisma.vacuna.count({
-        where: {
-          deletedAt: null,
-          paciente: { clinicaId },
-          proximaDosis: { gte: inicio, lte: en15Dias },
-        },
-      }),
-      prisma.cliente.count({
-        where: { clinicaId, deletedAt: null, creadoEn: { gte: inicio, lte: fin } },
-      }),
-    ]);
+  const [
+    metricasDelDia,
+    citasCompletadas,
+    stockBajo,
+    proximasVacunas,
+    clientesNuevos,
+    mantenimientosProximos,
+  ] = await Promise.all([
+    contarMetricasDelDia(clinicaId, inicio, fin),
+    prisma.cita.count({
+      where: {
+        clinicaId,
+        fechaHora: { gte: inicio, lte: fin },
+        estado: "COMPLETADA",
+      },
+    }),
+    getProductosStockBajo(clinicaId),
+    prisma.vacuna.count({
+      where: {
+        deletedAt: null,
+        paciente: { clinicaId },
+        proximaDosis: { gte: inicio, lte: en15Dias },
+      },
+    }),
+    prisma.cliente.count({
+      where: { clinicaId, deletedAt: null, creadoEn: { gte: inicio, lte: fin } },
+    }),
+    prisma.mantenimientoEquipo.count({
+      where: {
+        deletedAt: null,
+        producto: { clinicaId },
+        proximoEn: { gte: inicio, lte: en15Dias },
+      },
+    }),
+  ]);
 
   return {
     citasHoy: metricasDelDia.citas,
@@ -97,6 +110,7 @@ export async function getEstadisticasHoy(clinicaId: string) {
     productosStockBajo: stockBajo.length,
     proximasVacunas,
     clientesNuevosHoy: clientesNuevos,
+    mantenimientosProximos,
   };
 }
 
@@ -147,6 +161,28 @@ export async function getProximasVacunasDetalle(clinicaId: string, limite = 5) {
           cliente: { select: { nombre: true, apellido: true } },
         },
       },
+    },
+  });
+}
+
+export async function getProximosMantenimientos(clinicaId: string, limite = 5) {
+  const inicio = inicioHoy();
+  const en15Dias = new Date(inicio);
+  en15Dias.setDate(en15Dias.getDate() + 15);
+
+  return prisma.mantenimientoEquipo.findMany({
+    where: {
+      deletedAt: null,
+      producto: { clinicaId },
+      proximoEn: { gte: inicio, lte: en15Dias },
+    },
+    orderBy: { proximoEn: "asc" },
+    take: limite,
+    select: {
+      id: true,
+      tipo: true,
+      proximoEn: true,
+      producto: { select: { nombre: true } },
     },
   });
 }

@@ -8,6 +8,7 @@ import {
   UserPlus,
   Stethoscope,
   PawPrint,
+  Wrench,
 } from "lucide-react";
 
 import { authOptions } from "@/lib/auth";
@@ -16,6 +17,7 @@ import {
   getCitasHoy,
   getProductosStockBajo,
   getProximasVacunasDetalle,
+  getProximosMantenimientos,
 } from "@/lib/dashboard";
 import {
   getResumenMensual,
@@ -29,6 +31,7 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { CitasHoy } from "@/components/dashboard/CitasHoy";
 import { StockAlerts } from "@/components/dashboard/StockAlerts";
 import { ProximasVacunas } from "@/components/dashboard/ProximasVacunas";
+import { MantenimientosProximos } from "@/components/dashboard/MantenimientosProximos";
 import { EvolucionIngresos } from "@/components/dashboard/EvolucionIngresos";
 import { RankingLista } from "@/components/dashboard/RankingLista";
 import { ControlesProximos } from "@/components/dashboard/ControlesProximos";
@@ -48,6 +51,7 @@ export default async function DashboardPage() {
     citas,
     stockBajo,
     vacunas,
+    mantenimientos,
     resumenMes,
     servicios,
     productos,
@@ -59,6 +63,7 @@ export default async function DashboardPage() {
     getCitasHoy(clinicaId),
     getProductosStockBajo(clinicaId),
     getProximasVacunasDetalle(clinicaId),
+    getProximosMantenimientos(clinicaId),
     getResumenMensual(clinicaId),
     getServiciosMasUtilizados(clinicaId),
     getProductosMasVendidos(clinicaId),
@@ -123,6 +128,11 @@ export default async function DashboardPage() {
           valor={String(stats.proximasVacunas)}
           icon={Syringe}
         />
+        <StatsCard
+          titulo="Mantenimientos próximos"
+          valor={String(stats.mantenimientosProximos)}
+          icon={Wrench}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
@@ -135,6 +145,8 @@ export default async function DashboardPage() {
       </div>
 
       <ProximasVacunas vacunas={vacunas} />
+
+      <MantenimientosProximos mantenimientos={mantenimientos} />
 
       <div className="space-y-4">
         <div className="space-y-1">

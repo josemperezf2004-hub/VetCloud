@@ -281,6 +281,20 @@ export const movimientoSchema = z.object({
 
 export type MovimientoInput = z.infer<typeof movimientoSchema>;
 
+// `tipo` es texto libre (no enum), mismo criterio que `Vacuna.nombre`: la
+// variedad real de mantenimientos (calibración, servicio técnico, limpieza,
+// certificación...) es demasiado abierta para forzar una lista cerrada.
+export const mantenimientoSchema = z.object({
+  tipo: z.string().min(1, "Ingresa el tipo de mantenimiento"),
+  proveedor: z.string().optional().or(z.literal("")),
+  realizadoEn: z.string().min(1, "Ingresa la fecha realizada"),
+  proximoEn: z.string().optional().or(z.literal("")),
+  costo: z.number().nonnegative("El costo no puede ser negativo").optional(),
+  notas: z.string().optional().or(z.literal("")),
+});
+
+export type MantenimientoInput = z.infer<typeof mantenimientoSchema>;
+
 export const METODOS_PAGO = ["EFECTIVO", "TARJETA", "TRANSFERENCIA", "QR", "OTRO"] as const;
 
 export const ESTADOS_FACTURA = ["PENDIENTE", "PAGADA", "CANCELADA", "ANULADA"] as const;

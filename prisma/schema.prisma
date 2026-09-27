@@ -75,7 +75,7 @@ model PasswordResetToken {
   usadoEn   DateTime?
   creadoEn  DateTime  @default(now())
 
-  usuario   Usuario   @relation(fields: [usuarioId], references: [id])
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
 
   @@index([usuarioId])
   @@map("password_reset_tokens")
@@ -263,12 +263,36 @@ model Producto {
   creadoEn      DateTime          @default(now())
   actualizadoEn DateTime          @updatedAt
 
-  clinica      Clinica                @relation(fields: [clinicaId], references: [id])
-  movimientos  MovimientoInventario[]
-  itemsFactura ItemFactura[]
+  clinica        Clinica                @relation(fields: [clinicaId], references: [id])
+  movimientos    MovimientoInventario[]
+  itemsFactura   ItemFactura[]
+  mantenimientos MantenimientoEquipo[]
 
   @@index([clinicaId, categoria])
   @@map("productos")
+}
+
+// Solo aplica a Producto.categoria == EQUIPO en la práctica (validado en la API,
+// no en el schema) — el resto de categorías nunca crea filas acá. La "próxima
+// fecha" se carga a mano en cada registro (igual que Vacuna.proximaDosis), sin
+// lógica de intervalos automáticos.
+model MantenimientoEquipo {
+  id          String    @id @default(cuid())
+  productoId  String
+  tipo        String
+  proveedor   String?
+  realizadoEn DateTime
+  proximoEn   DateTime?
+  costo       Float?
+  notas       String?
+  deletedAt   DateTime?
+  creadoEn    DateTime  @default(now())
+
+  producto Producto @relation(fields: [productoId], references: [id])
+
+  @@index([productoId])
+  @@index([proximoEn])
+  @@map("mantenimientos_equipo")
 }
 
 model MovimientoInventario {
