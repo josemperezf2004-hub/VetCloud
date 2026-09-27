@@ -57,10 +57,12 @@ export async function listarProductos(
 // (stockActual <= stockMinimo, lo que incluye a los que están en 0) para que
 // el número de esta card coincida con la alerta que ya se muestra en el
 // dashboard desde la Fase 2. "Sin stock" es un subconjunto de ese mismo grupo,
-// mostrado aparte porque es la urgencia máxima. "Total" y "Valor total" sí
-// incluyen EQUIPO/SERVICIO (son inventario real), pero "stock bajo"/"sin
-// stock" no aplican a esas dos categorías (no se consumen/reponen) — mismo
-// criterio que getProductosStockBajo.
+// mostrado aparte porque es la urgencia máxima. "Total" sí incluye
+// EQUIPO/SERVICIO, pero "stock bajo"/"sin stock" no aplican a esas dos
+// categorías (no se consumen/reponen) — mismo criterio que
+// getProductosStockBajo. "Valor total" excluye SERVICIO (no es un bien
+// consumible, no tiene "valor en existencia" real) pero sí incluye EQUIPO
+// (son activos físicos reales, con valor de inventario genuino).
 export async function getResumenInventario(clinicaId: string) {
   const productos = await prisma.producto.findMany({
     where: { clinicaId, activo: true, deletedAt: null },
@@ -81,10 +83,9 @@ export async function getResumenInventario(clinicaId: string) {
   // El valor de un producto en stock se calcula a costo cuando se conoce
   // (precioCosto), y a precio de venta como respaldo si nunca se registró un
   // costo — es una aproximación razonable para el MVP, no un dato contable.
-  const valorTotal = productos.reduce(
-    (acc, p) => acc + p.stockActual * (p.precioCosto ?? p.precioVenta),
-    0
-  );
+  const valorTotal = productos
+    .filter((p) => p.categoria !== "SERVICIO")
+    .reduce((acc, p) => acc + p.stockActual * (p.precioCosto ?? p.precioVenta), 0);
 
   return { total: productos.length, stockBajo, sinStock, valorTotal };
 }
