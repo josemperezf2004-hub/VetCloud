@@ -49,3 +49,21 @@ export async function enviarEmailRecuperacion(destinatario: string, link: string
      <p>Este enlace vence en 1 hora. Si no solicitaste esto, puedes ignorar este email.</p>`
   );
 }
+
+export async function enviarEmailRecordatorioCita(
+  destinatario: string,
+  datos: { clinicaNombre: string; mascotaNombre: string; fechaHora: Date; veterinarioNombre: string }
+) {
+  const fecha = datos.fechaHora.toLocaleString("es-EC", {
+    timeZone: "America/Guayaquil",
+    dateStyle: "full",
+    timeStyle: "short",
+  });
+  await enviarEmail(
+    destinatario,
+    `Recordatorio: cita de ${datos.mascotaNombre} mañana`,
+    `<p>Te recordamos la cita de <strong>${datos.mascotaNombre}</strong> en <strong>${datos.clinicaNombre}</strong>.</p>
+     <p><strong>Cuándo:</strong> ${fecha}<br/><strong>Veterinario/a:</strong> ${datos.veterinarioNombre}</p>
+     <p>Si necesitas reprogramar, contacta directamente a la clínica.</p>`
+  );
+}
