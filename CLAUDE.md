@@ -1293,6 +1293,29 @@ Verificado end-to-end contra Supabase real (clínicas de prueba creadas y luego 
 
 ---
 
+### AJUSTE POST-FASE 9 — Migración de hosting: Vercel → Netlify (2026-09-27)
+
+**Motivo:** el plan Hobby de Vercel prohíbe explícitamente uso comercial en sus Términos de Servicio (pueden desactivar el proyecto sin aviso), y VetCloud cobra desde el 2026-09-24 — riesgo real, no hipotético. Netlify sí permite uso comercial en su plan gratis. Se evaluó primero sin tocar Vercel (sitio paralelo `vetcloud-eval`), se verificó de punta a punta contra la misma base de Supabase, y luego se cortó de verdad.
+
+**Netlify (`vet-cloud.netlify.app`) es ahora la plataforma real.** Vercel (`vet-cloud-theta.vercel.app`) queda desplegado como respaldo — sigue recibiendo pushes a `main` (su integración de GitHub no se desconectó a propósito), pero ya no corre el cron de recordatorios y no es la URL que se le da a las clínicas. No se borró nada de Vercel; es una decisión reversible.
+
+**Archivos nuevos de esta migración:**
+- `netlify.toml` (raíz): build command `npm run build`, publish `.next`, plugin `@netlify/plugin-nextjs`.
+- `netlify/functions/recordatorios-cron.mts`: Netlify Scheduled Function que llama a `/api/cron/recordatorios` (el mismo endpoint que ya existía) — no duplica lógica, solo agrega el disparador. `schedule: "0 13 * * *"`, igual que tenía Vercel.
+- `vercel.json`: `crons` vacío a propósito — el cron de recordatorios corre en Netlify ahora. **Nunca activar el de Vercel de nuevo sin desactivar antes el de Netlify (o viceversa) — correr los dos a la vez duplica los emails de recordatorio a clientes reales.**
+
+**Gotchas reales encontrados durante la migración (útiles si hay que repetir esto o depurar):**
+1. **`netlify deploy --build` (build local) falla en Windows con `EPERM: operation not permitted, symlink ...` sobre `@prisma/client`** — Windows bloquea symlinks sin Modo de Programador o privilegios de admin. Solución: no compilar localmente — conectar el repo de GitHub al sitio de Netlify (Site configuration → Developer settings → Link repository) para que Netlify compile en sus propios servidores Linux. Requiere autorizar el GitHub App de Netlify (OAuth, lo tiene que aprobar el dueño de la cuenta en su navegador).
+2. **El `DATABASE_URL` copiado del `.env` local usa el Session Pooler (puerto 5432)** — correcto para desarrollo local (ver Fase 0.1), pero es exactamente el mismo bug ya resuelto en Vercel el 2026-09-17 (`EMAXCONNSESSION`, el Session Pooler se queda sin clientes bajo carga serverless). La URL de producción correcta usa el **Transaction Pooler (puerto 6543)**, y ese valor corregido solo vive en las env vars del dashboard de Vercel — nunca se escribió de vuelta al `.env` del repo. Cualquier plataforma nueva que copie env vars desde `.env` sin ajustar el puerto va a pisar el mismo problema.
+3. **Los sitios nuevos de Netlify son "Private by default"** — no es un error de la app, es un muro de acceso propio de Netlify (separado del login de VetCloud) que hay que sacar explícitamente (Site overview → "Make public") para que cualquiera pueda entrar, no solo el dueño logueado en Netlify.
+4. La app en sí no necesitó **ningún cambio de código** para funcionar en Netlify — mismo `proxy.ts`, mismo Driver Adapter de Prisma (`@prisma/adapter-pg`, corre en Node.js, no Edge), mismo `nodemailer` (las conexiones SMTP salientes funcionan igual en Netlify Functions).
+
+Verificado end-to-end en `vet-cloud.netlify.app`: login con la cuenta demo real (datos reales, misma base que Vercel), registro de clínica nueva + redirect a `/suscripcion` (mismo comportamiento que Vercel), escritura real vía Prisma, descarga de plantilla Excel, function de recordatorios invocada manualmente sin error, y confirmado que el schedule real quedó activo ("Next execution on Sep 27 at 8:00 AM"). La URL vieja de Vercel se confirmó que sigue sirviendo (200) como respaldo.
+
+**Pendiente, a cargo del usuario, no de Claude:** avisarle a la clínica real (`Clinica PEPITO perez`) la URL nueva. Su sesión en la URL vieja de Vercel sigue funcionando mientras tanto, no hay corte abrupto.
+
+---
+
 ## 📋 Checklist General de Calidad
 
 Antes de considerar cada fase completa, verificar:
