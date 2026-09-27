@@ -351,3 +351,122 @@ export const cuentaConfigSchema = z.object({
 });
 
 export type CuentaConfigInput = z.infer<typeof cuentaConfigSchema>;
+
+// ─── IMPORTACIÓN MASIVA (EXCEL) ─────────────────────────────────────────────
+// A diferencia de los schemas de arriba (que asumen un <input> ya tipado como
+// string), estas filas vienen de celdas de Excel: pueden llegar como string,
+// number, boolean, Date, un objeto richText, o null/undefined (celda vacía).
+// z.preprocess normaliza cada celda antes de validar. Reusa ESPECIES/SEXOS/
+// CATEGORIAS_PRODUCTO de arriba como única fuente de verdad de los enums, en
+// vez de duplicar las listas.
+
+function normalizarCelda(valor: unknown): unknown {
+  if (valor === null || valor === undefined) return undefined;
+  if (valor instanceof Date) return valor;
+  if (typeof valor === "object") {
+    if ("richText" in valor) {
+      const texto = (valor as { richText: { text: string }[] }).richText
+        .map((r) => r.text)
+        .join("")
+        .trim();
+      return texto === "" ? undefined : texto;
+    }
+    if ("text" in valor) {
+      const texto = String((valor as { text: unknown }).text).trim();
+      return texto === "" ? undefined : texto;
+    }
+    return undefined;
+  }
+  if (typeof valor === "string") {
+    const texto = valor.trim();
+    return texto === "" ? undefined : texto;
+  }
+  return valor;
+}
+
+function celdaANumero(valor: unknown): unknown {
+  const normalizado = normalizarCelda(valor);
+  if (normalizado === undefined) return undefined;
+  if (typeof normalizado === "number") return normalizado;
+  const parsed = Number(String(normalizado).replace(",", "."));
+  return Number.isNaN(parsed) ? normalizado : parsed;
+}
+
+const celdaTextoOpcional = z.preprocess(normalizarCelda, z.string().optional());
+
+function celdaEnum<T extends readonly [string, ...string[]]>(valores: T, label: string) {
+  return z.preprocess((valor) => {
+    const normalizado = normalizarCelda(valor);
+    return typeof normalizado === "string" ? normalizado.toUpperCase() : normalizado;
+  }, z.enum(valores, { message: `${label} inválida (usa: ${valores.join(", ")})` }));
+}
+
+const celdaBooleanoSiNo = z.preprocess((valor) => {
+  const normalizado = normalizarCelda(valor);
+  if (normalizado === undefined) return false;
+  if (typeof normalizado === "boolean") return normalizado;
+  return ["SI", "SÍ", "1", "TRUE", "X"].includes(String(normalizado).toUpperCase());
+}, z.boolean());
+
+const celdaNumeroOpcional = z.preprocess(
+  celdaANumero,
+  z.number("Debe ser un número").nonnegative("No puede ser negativo").optional()
+);
+
+export const clienteImportRowSchema = z.object({
+  nombre: z.preprocess(normalizarCelda, z.string("Falta el nombre").min(2, "El nombre es muy corto")),
+  apellido: z.preprocess(normalizarCelda, z.string("Falta el apellido").min(2, "El apellido es muy corto")),
+  telefono: z.preprocess(normalizarCelda, z.string("Falta el teléfono").min(7, "Teléfono inválido")),
+  whatsapp: celdaTextoOpcional,
+  email: z.preprocess(normalizarCelda, z.string().email("Email inválido").optional()),
+  cedula: celdaTextoOpcional,
+  direccion: celdaTextoOpcional,
+  notas: celdaTextoOpcional,
+});
+
+export type ClienteImportRow = z.infer<typeof clienteImportRowSchema>;
+
+export const pacienteImportRowSchema = z.object({
+  telefonoPropietario: z.preprocess(
+    normalizarCelda,
+    z.string("Falta el teléfono del propietario").min(7, "Teléfono del propietario inválido")
+  ),
+  nombre: z.preprocess(normalizarCelda, z.string("Falta el nombre de la mascota").min(1, "Falta el nombre de la mascota")),
+  especie: celdaEnum(ESPECIES, "Especie"),
+  raza: celdaTextoOpcional,
+  color: celdaTextoOpcional,
+  sexo: celdaEnum(SEXOS, "Sexo"),
+  fechaNacimiento: z.preprocess((valor) => {
+    const normalizado = normalizarCelda(valor);
+    if (normalizado === undefined) return undefined;
+    return normalizado instanceof Date ? normalizado.toISOString() : String(normalizado);
+  }, z.string().optional()),
+  peso: celdaNumeroOpcional,
+  chipId: celdaTextoOpcional,
+  alergias: celdaTextoOpcional,
+  condiciones: celdaTextoOpcional,
+  esterilizado: celdaBooleanoSiNo,
+  notas: celdaTextoOpcional,
+});
+
+export type PacienteImportRow = z.infer<typeof pacienteImportRowSchema>;
+
+export const productoImportRowSchema = z.object({
+  nombre: z.preprocess(normalizarCelda, z.string("Falta el nombre").min(2, "El nombre es muy corto")),
+  sku: celdaTextoOpcional,
+  categoria: celdaEnum(CATEGORIAS_PRODUCTO, "Categoría"),
+  descripcion: celdaTextoOpcional,
+  unidad: z.preprocess((valor) => normalizarCelda(valor) ?? "unidad", z.string().min(1)),
+  precioVenta: z.preprocess(
+    celdaANumero,
+    z.number("Falta el precio de venta").nonnegative("El precio no puede ser negativo")
+  ),
+  precioCosto: celdaNumeroOpcional,
+  stockInicial: celdaNumeroOpcional,
+  stockMinimo: z.preprocess(
+    celdaANumero,
+    z.number("Debe ser un número").nonnegative("El stock mínimo no puede ser negativo").default(5)
+  ),
+});
+
+export type ProductoImportRow = z.infer<typeof productoImportRowSchema>;

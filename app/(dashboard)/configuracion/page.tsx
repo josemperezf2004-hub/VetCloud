@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ROL_LABELS } from "@/components/layout/nav-items";
 import { ClinicaConfigForm } from "@/components/configuracion/ClinicaConfigForm";
 import { CuentaConfigForm } from "@/components/configuracion/CuentaConfigForm";
+import { ImportarDatosCard } from "@/components/configuracion/ImportarDatosCard";
 
 export default async function ConfiguracionPage() {
   const session = await getServerSession(authOptions);
@@ -46,6 +47,11 @@ export default async function ConfiguracionPage() {
           rol={ROL_LABELS[usuario.rol] ?? usuario.rol}
           defaultValues={{ nombre: usuario.nombre }}
         />
+      </div>
+
+      <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+        <h2 className="mb-5 text-sm font-semibold text-gray-900">Importar datos</h2>
+        <ImportarDatosCard />
       </div>
     </div>
   );
