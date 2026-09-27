@@ -130,11 +130,6 @@ export default async function DashboardPage() {
           icon={HeartPulse}
         />
         <StatsCard
-          titulo="Clientes nuevos"
-          valor={String(stats.clientesNuevosHoy)}
-          icon={UserPlus}
-        />
-        <StatsCard
           titulo="Stock bajo"
           valor={String(stats.productosStockBajo)}
           icon={PackageX}
