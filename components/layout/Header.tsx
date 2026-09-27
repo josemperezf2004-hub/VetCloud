@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 import { MobileNav } from "@/components/layout/MobileNav";
+import { PreguntasFrecuentesDialog } from "@/components/layout/PreguntasFrecuentesDialog";
 
 const SECTION_LABELS: Record<string, string> = {
   "/": "Dashboard",
@@ -59,12 +60,13 @@ export function Header({
         </nav>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         {ahora && (
           <span className="hidden text-sm text-gray-500 sm:inline capitalize">
             {format(ahora, "EEEE d 'de' MMMM, HH:mm", { locale: es })}
           </span>
         )}
+        <PreguntasFrecuentesDialog />
       </div>
     </header>
   );
