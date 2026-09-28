@@ -9,7 +9,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CerrarSesionButton } from "@/components/suscripcion/CerrarSesionButton";
 
-const PRECIO_MENSUAL = "$11.50 USD";
+const PRECIO_MENSUAL = "$14.99 USD";
 const CUENTA_BANCO = "Banco Pichincha";
 const CUENTA_NUMERO = "2209703045";
 

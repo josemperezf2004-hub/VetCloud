@@ -1291,6 +1291,8 @@ Primera monetización real del producto, pedida explícitamente por el usuario, 
 
 Verificado end-to-end contra Supabase real (clínicas de prueba creadas y luego borradas junto con el resto en la limpieza de datos): `npx tsc --noEmit`, `npm run lint` y `npm run build` limpios los tres; registro deja `activa:false` y el login igual funciona; `/` redirige a `/suscripcion` cuando está bloqueada y dejar de redirigir apenas se confirma el pago (sin relogin); corte automático confirmado forzando `suscripcionVenceEn` a ayer; recuperación de contraseña probada de punta a punta en modo degradado (link en el log, token de un solo uso, rechazo de token reusado); `/api/plataforma/*` devuelve 403 a un usuario sin `esSuperAdmin`.
 
+**Ajuste de precio (2026-09-28):** `PRECIO_MENSUAL` en `app/suscripcion/page.tsx` subió de `$11.50 USD` a `$14.99 USD` (decisión del usuario, tras discutir que $11.50 estaba por debajo del piso de costo de infraestructura y del mercado comparable). Solo texto/constante, sin cambios de lógica ni migración — no cambia la mensualidad de clínicas ya activas retroactivamente, solo lo que se muestra en la página desde ahora.
+
 ---
 
 ### AJUSTE POST-FASE 9 — Migración de hosting: Vercel → Netlify (2026-09-27)
