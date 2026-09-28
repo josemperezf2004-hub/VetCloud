@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { AlertTriangle, ArrowLeft, HeartPulse } from "lucide-react";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 import { NuevaConsultaForm } from "@/components/historia-clinica/NuevaConsultaForm";
 
 export default async function NuevaConsultaPage({
@@ -13,6 +14,9 @@ export default async function NuevaConsultaPage({
   searchParams: Promise<{ pacienteId?: string; citaId?: string }>;
 }) {
   const session = await getServerSession(authOptions);
+  if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "historia_clinica"))) {
+    redirect("/");
+  }
   const { pacienteId, citaId } = await searchParams;
 
   if (!pacienteId) {

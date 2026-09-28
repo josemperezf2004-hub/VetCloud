@@ -9,6 +9,7 @@ import {
   importarProductos,
   type EntidadImportable,
 } from "@/lib/importacion";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 
 const MAX_BYTES = 4 * 1024 * 1024; // margen bajo el límite de payload de 4.5MB de Vercel
 
@@ -16,6 +17,9 @@ export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!(await tienePermisoClinica(session.user.clinicaId, session.user.rol, "importar"))) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
   const formData = await request.formData();

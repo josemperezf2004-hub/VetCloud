@@ -10,6 +10,9 @@ export async function PUT(request: Request) {
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
+  if (session.user.rol !== "ADMIN") {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  }
 
   const body = await request.json();
   const parsed = clinicaConfigSchema.safeParse(body);

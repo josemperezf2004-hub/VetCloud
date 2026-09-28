@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MODULOS_RESTRINGIBLES } from "@/lib/permisos";
 
 export const loginSchema = z.object({
   email: z.string().min(1, "El email es requerido").email("Email inválido"),
@@ -34,6 +35,39 @@ export const restablecerPasswordSchema = z.object({
 });
 
 export type RestablecerPasswordInput = z.infer<typeof restablecerPasswordSchema>;
+
+export const ROLES_STAFF = ["VETERINARIO", "RECEPCIONISTA"] as const;
+
+export const invitarUsuarioSchema = z.object({
+  nombre: z.string().min(2, "Ingresa el nombre"),
+  email: z.string().email("Email inválido"),
+  rol: z.enum(ROLES_STAFF, { message: "Selecciona un rol válido" }),
+});
+
+export type InvitarUsuarioInput = z.infer<typeof invitarUsuarioSchema>;
+
+export const actualizarPersonalSchema = z
+  .object({
+    activo: z.boolean().optional(),
+    rol: z.enum(ROLES_STAFF).optional(),
+    reenviarInvitacion: z.boolean().optional(),
+  })
+  .refine(
+    (data) =>
+      data.activo !== undefined ||
+      data.rol !== undefined ||
+      data.reenviarInvitacion !== undefined,
+    { message: "No hay ningún cambio para aplicar" }
+  );
+
+export type ActualizarPersonalInput = z.infer<typeof actualizarPersonalSchema>;
+
+export const permisosPersonalSchema = z.object({
+  VETERINARIO: z.array(z.enum(MODULOS_RESTRINGIBLES)),
+  RECEPCIONISTA: z.array(z.enum(MODULOS_RESTRINGIBLES)),
+});
+
+export type PermisosPersonalInput = z.infer<typeof permisosPersonalSchema>;
 
 export const clienteSchema = z.object({
   nombre: z.string().min(2, "Ingresa el nombre"),

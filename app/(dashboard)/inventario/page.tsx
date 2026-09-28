@@ -1,9 +1,11 @@
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { Package, AlertTriangle, XCircle, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 import { authOptions } from "@/lib/auth";
 import { listarProductos, getResumenInventario } from "@/lib/inventario";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { BuscadorProductos } from "@/components/inventario/BuscadorProductos";
 import { CategoriaTabs } from "@/components/inventario/CategoriaTabs";
@@ -23,6 +25,9 @@ export default async function InventarioPage({
   searchParams: Promise<{ q?: string; categoria?: string; page?: string }>;
 }) {
   const session = await getServerSession(authOptions);
+  if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "inventario"))) {
+    redirect("/");
+  }
   const { q, categoria, page } = await searchParams;
   const categoriaActiva = categoria ?? "TODOS";
 

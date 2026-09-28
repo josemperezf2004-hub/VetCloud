@@ -10,7 +10,7 @@ import {
   Avatar,
   AvatarFallback,
 } from "@/components/ui/avatar";
-import { NAV_ITEMS, ROL_LABELS } from "@/components/layout/nav-items";
+import { ROL_LABELS, getNavItemsVisibles } from "@/components/layout/nav-items";
 
 function iniciales(nombre: string) {
   return nombre
@@ -24,11 +24,14 @@ function iniciales(nombre: string) {
 export function Sidebar({
   usuarioNombre,
   usuarioRol,
+  permisos,
 }: {
   usuarioNombre: string;
   usuarioRol: string;
+  permisos: unknown;
 }) {
   const pathname = usePathname();
+  const navItems = getNavItemsVisibles(usuarioRol, permisos);
 
   return (
     <aside className="hidden md:flex md:h-screen md:sticky md:top-0 md:w-[240px] md:flex-shrink-0 md:flex-col bg-[#0F6E56] text-white print:hidden">
@@ -38,7 +41,7 @@ export function Sidebar({
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-2">
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const active =
             item.href === "/"
               ? pathname === "/"

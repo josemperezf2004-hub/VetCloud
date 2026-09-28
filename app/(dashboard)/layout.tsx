@@ -22,7 +22,7 @@ export default async function DashboardLayout({
   // cierre y abra sesión de nuevo.
   const clinica = await prisma.clinica.findUnique({
     where: { id: session.user.clinicaId },
-    select: { activa: true, suscripcionVenceEn: true },
+    select: { activa: true, suscripcionVenceEn: true, permisosPersonal: true },
   });
   const suscripcionBloqueada =
     !clinica?.activa ||
@@ -37,11 +37,13 @@ export default async function DashboardLayout({
       <Sidebar
         usuarioNombre={session.user.name ?? session.user.email ?? ""}
         usuarioRol={session.user.rol}
+        permisos={clinica?.permisosPersonal}
       />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header
           usuarioNombre={session.user.name ?? session.user.email ?? ""}
           usuarioRol={session.user.rol}
+          permisos={clinica?.permisosPersonal}
         />
         <main className="flex-1 overflow-y-auto p-6 print:overflow-visible print:p-0">
           {children}

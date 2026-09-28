@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { DollarSign, Clock, CheckCircle2, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { listarFacturas, getEstadisticasFacturacion } from "@/lib/facturas";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { FiltrosFacturas } from "@/components/facturacion/FiltrosFacturas";
 import { FacturaTable } from "@/components/facturacion/FacturaTable";
@@ -21,6 +23,9 @@ export default async function FacturacionPage({
   searchParams: Promise<{ estado?: string; fecha?: string; clienteId?: string; page?: string }>;
 }) {
   const session = await getServerSession(authOptions);
+  if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "facturacion"))) {
+    redirect("/");
+  }
   const { estado, fecha, clienteId, page } = await searchParams;
   const estadoActivo = estado ?? "TODOS";
 

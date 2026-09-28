@@ -27,6 +27,7 @@ model Clinica {
   plan               Plan      @default(BASICO)
   activa             Boolean   @default(true)
   suscripcionVenceEn DateTime?
+  permisosPersonal   Json?
   creadoEn           DateTime  @default(now())
 
   usuarios  Usuario[]
@@ -368,8 +369,6 @@ enum Rol {
   ADMIN
   VETERINARIO
   RECEPCIONISTA
-  INVENTARIO
-  CONTADOR
 }
 
 enum Especie {

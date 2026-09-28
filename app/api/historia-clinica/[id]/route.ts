@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { consultaEditSchema } from "@/lib/validations";
 import { getConsultaDetalle } from "@/lib/historia-clinica";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 
 export async function GET(
   request: Request,
@@ -13,6 +14,9 @@ export async function GET(
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!(await tienePermisoClinica(session.user.clinicaId, session.user.rol, "historia_clinica"))) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
   const { id } = await params;
@@ -35,6 +39,9 @@ export async function PUT(
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!(await tienePermisoClinica(session.user.clinicaId, session.user.rol, "historia_clinica"))) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
   const { id } = await params;

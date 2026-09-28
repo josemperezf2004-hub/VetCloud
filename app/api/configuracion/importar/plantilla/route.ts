@@ -3,11 +3,15 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
 import { ENTIDADES_IMPORTABLES, generarPlantilla, type EntidadImportable } from "@/lib/importacion";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!(await tienePermisoClinica(session.user.clinicaId, session.user.rol, "importar"))) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
   const entidad = new URL(request.url).searchParams.get("entidad");

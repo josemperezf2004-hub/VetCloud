@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { authOptions } from "@/lib/auth";
 import { getFacturaDetalle } from "@/lib/facturas";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 import { BotonImprimir } from "@/components/historia-clinica/BotonImprimir";
 import { RegistrarPagoDialog } from "@/components/facturacion/RegistrarPagoDialog";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,9 @@ export default async function FacturaDetallePage({
   params: Promise<{ id: string }>;
 }) {
   const session = await getServerSession(authOptions);
+  if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "facturacion"))) {
+    redirect("/");
+  }
   const { id } = await params;
 
   const factura = await getFacturaDetalle(session!.user.clinicaId, id);

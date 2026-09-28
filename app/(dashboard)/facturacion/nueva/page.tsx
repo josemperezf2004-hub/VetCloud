@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { authOptions } from "@/lib/auth";
 import { getBorradorDesdeConsulta } from "@/lib/facturas";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 import { FacturaForm } from "@/components/facturacion/FacturaForm";
 import type { FacturaInput } from "@/lib/validations";
 
@@ -13,6 +15,9 @@ export default async function NuevaFacturaPage({
   searchParams: Promise<{ historiaId?: string }>;
 }) {
   const session = await getServerSession(authOptions);
+  if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "facturacion"))) {
+    redirect("/");
+  }
   const { historiaId } = await searchParams;
 
   let defaultValues: Partial<FacturaInput> | undefined;

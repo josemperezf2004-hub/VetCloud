@@ -9,7 +9,7 @@ import { Menu, PawPrint, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { NAV_ITEMS, ROL_LABELS } from "@/components/layout/nav-items";
+import { ROL_LABELS, getNavItemsVisibles } from "@/components/layout/nav-items";
 
 function iniciales(nombre: string) {
   return nombre
@@ -28,12 +28,15 @@ function iniciales(nombre: string) {
 export function MobileNav({
   usuarioNombre,
   usuarioRol,
+  permisos,
 }: {
   usuarioNombre: string;
   usuarioRol: string;
+  permisos: unknown;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const navItems = getNavItemsVisibles(usuarioRol, permisos);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -58,7 +61,7 @@ export function MobileNav({
           </div>
 
           <nav className="flex-1 space-y-1 px-3 py-2">
-            {NAV_ITEMS.map((item) => {
+            {navItems.map((item) => {
               const active =
                 item.href === "/" ? pathname === "/" : pathname?.startsWith(item.href);
               const Icon = item.icon;

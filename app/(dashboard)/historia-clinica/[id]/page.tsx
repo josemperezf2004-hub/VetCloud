@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -7,6 +7,7 @@ import { ArrowLeft, Receipt } from "lucide-react";
 
 import { authOptions } from "@/lib/auth";
 import { getConsultaDetalle } from "@/lib/historia-clinica";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 import { BotonImprimir } from "@/components/historia-clinica/BotonImprimir";
 import { Button } from "@/components/ui/button";
 import type { PrescripcionItemInput } from "@/lib/validations";
@@ -27,6 +28,9 @@ export default async function ConsultaDetallePage({
   params: Promise<{ id: string }>;
 }) {
   const session = await getServerSession(authOptions);
+  if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "historia_clinica"))) {
+    redirect("/");
+  }
   const { id } = await params;
 
   const historia = await getConsultaDetalle(session!.user.clinicaId, id);

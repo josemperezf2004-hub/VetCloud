@@ -20,6 +20,7 @@ import {
 
 import { authOptions } from "@/lib/auth";
 import { getPacienteDetalle } from "@/lib/pacientes";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 import {
   Tabs,
   TabsContent,
@@ -97,6 +98,12 @@ export default async function PacienteDetallePage({
     notFound();
   }
 
+  const tieneHistoriaClinica = await tienePermisoClinica(
+    session!.user.clinicaId,
+    session!.user.rol,
+    "historia_clinica"
+  );
+
   const Icono = ESPECIE_ICONO[paciente.especie] ?? PawPrint;
   const edad = calcularEdad(paciente.fechaNacimiento);
 
@@ -171,12 +178,14 @@ export default async function PacienteDetallePage({
           </div>
 
           <div className="flex flex-col items-end gap-2">
-            <Button asChild className="bg-[#0F6E56] hover:bg-[#1D9E75] text-white">
-              <Link href={`/historia-clinica/nueva?pacienteId=${paciente.id}`}>
-                <Stethoscope className="size-4" />
-                Nueva consulta
-              </Link>
-            </Button>
+            {tieneHistoriaClinica && (
+              <Button asChild className="bg-[#0F6E56] hover:bg-[#1D9E75] text-white">
+                <Link href={`/historia-clinica/nueva?pacienteId=${paciente.id}`}>
+                  <Stethoscope className="size-4" />
+                  Nueva consulta
+                </Link>
+              </Button>
+            )}
             <PacienteAcciones
               pacienteId={paciente.id}
               nombre={paciente.nombre}
@@ -207,19 +216,21 @@ export default async function PacienteDetallePage({
         </div>
       </div>
 
-      <Tabs defaultValue="historia">
+      <Tabs defaultValue={tieneHistoriaClinica ? "historia" : "vacunas"}>
         <TabsList>
-          <TabsTrigger value="historia">Historia</TabsTrigger>
+          {tieneHistoriaClinica && <TabsTrigger value="historia">Historia</TabsTrigger>}
           <TabsTrigger value="vacunas">Vacunas</TabsTrigger>
           <TabsTrigger value="citas">Citas</TabsTrigger>
           <TabsTrigger value="adjuntos">Adjuntos</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="historia">
-          <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-            <TimelineClinico historias={paciente.historias} />
-          </div>
-        </TabsContent>
+        {tieneHistoriaClinica && (
+          <TabsContent value="historia">
+            <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+              <TimelineClinico historias={paciente.historias} />
+            </div>
+          </TabsContent>
+        )}
 
         <TabsContent value="vacunas">
           <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">

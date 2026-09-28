@@ -50,6 +50,20 @@ export async function enviarEmailRecuperacion(destinatario: string, link: string
   );
 }
 
+export async function enviarEmailInvitacion(
+  destinatario: string,
+  link: string,
+  datos: { clinicaNombre: string; rol: string }
+) {
+  await enviarEmail(
+    destinatario,
+    `Te invitaron a unirte a ${datos.clinicaNombre} en VetCloud`,
+    `<p>Te invitaron a formar parte del equipo de <strong>${datos.clinicaNombre}</strong> en VetCloud, con rol de <strong>${datos.rol}</strong>.</p>
+     <p><a href="${link}">Haz clic aquí para crear tu contraseña y activar tu cuenta</a></p>
+     <p>Este enlace vence en 72 horas. Si no esperabas esta invitación, puedes ignorar este email.</p>`
+  );
+}
+
 export async function enviarEmailRecordatorioCita(
   destinatario: string,
   datos: { clinicaNombre: string; mascotaNombre: string; fechaHora: Date; veterinarioNombre: string }

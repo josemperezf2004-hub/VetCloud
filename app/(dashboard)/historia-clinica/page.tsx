@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
 
 import { authOptions } from "@/lib/auth";
 import { listarHistoriasClinica } from "@/lib/historia-clinica";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -22,6 +24,9 @@ export default async function HistoriaClinicaPage({
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
   const session = await getServerSession(authOptions);
+  if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "historia_clinica"))) {
+    redirect("/");
+  }
   const { q, page } = await searchParams;
 
   const data = await listarHistoriasClinica(session!.user.clinicaId, {

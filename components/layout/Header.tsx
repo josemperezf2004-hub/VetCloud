@@ -28,9 +28,11 @@ function seccionActual(pathname: string) {
 export function Header({
   usuarioNombre,
   usuarioRol,
+  permisos,
 }: {
   usuarioNombre: string;
   usuarioRol: string;
+  permisos: unknown;
 }) {
   const pathname = usePathname();
   const [ahora, setAhora] = useState<Date | null>(null);
@@ -50,7 +52,7 @@ export function Header({
   return (
     <header className="flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 sm:px-6 print:hidden">
       <div className="flex items-center gap-1">
-        <MobileNav usuarioNombre={usuarioNombre} usuarioRol={usuarioRol} />
+        <MobileNav usuarioNombre={usuarioNombre} usuarioRol={usuarioRol} permisos={permisos} />
         <nav aria-label="breadcrumb" className="text-sm text-gray-500">
           <span className="hidden sm:inline">VetCloud</span>
           <span className="mx-2 hidden sm:inline">/</span>

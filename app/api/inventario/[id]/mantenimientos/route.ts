@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { mantenimientoSchema } from "@/lib/validations";
+import { tienePermisoClinica } from "@/lib/permisos-server";
 
 export async function POST(
   request: Request,
@@ -12,6 +13,9 @@ export async function POST(
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!(await tienePermisoClinica(session.user.clinicaId, session.user.rol, "inventario"))) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
   }
 
   const { id } = await params;
