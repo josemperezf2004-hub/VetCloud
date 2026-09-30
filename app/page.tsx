@@ -7,15 +7,48 @@ const EMAIL_CONTACTO = "vetcloud.ec@yahoo.com";
 const WHATSAPP_URL = "https://wa.me/593967063982";
 const WHATSAPP_LABEL = "+593 96 706 3982";
 
+const DESCRIPCION =
+  "Software de gestión para clínicas veterinarias: clientes, pacientes, agenda, historia clínica, inventario y caja en un solo lugar.";
+
 export const metadata: Metadata = {
-  title: "SaruVet — Tu clínica, organizada de principio a fin",
-  description:
-    "Software de gestión para clínicas veterinarias: clientes, pacientes, agenda, historia clínica, inventario y caja en un solo lugar.",
+  title: { absolute: "SaruVet — Tu clínica, organizada de principio a fin" },
+  description: DESCRIPCION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "SaruVet — Tu clínica, organizada de principio a fin",
+    description: DESCRIPCION,
+    url: "/",
+  },
+};
+
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "SaruVet",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  description: DESCRIPCION,
+  url: "https://saruvet.netlify.app",
+  offers: {
+    "@type": "Offer",
+    price: "14.99",
+    priceCurrency: "USD",
+  },
+  provider: {
+    "@type": "Organization",
+    name: "SaruVet",
+    email: EMAIL_CONTACTO,
+    telephone: "+593967063982",
+  },
 };
 
 export default function LandingPage() {
   return (
     <div className={styles.landingRoot}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
       <div className={styles.wrap}>
         <div className={styles.topbar}>
           <div className={styles.brand}>

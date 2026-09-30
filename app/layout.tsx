@@ -13,9 +13,21 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = "https://saruvet.netlify.app";
+
 export const metadata: Metadata = {
-  title: "SaruVet",
-  description: "Plataforma de gestión para clínicas veterinarias",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "SaruVet",
+    template: "%s · SaruVet",
+  },
+  description: "Sistema de gestión para tu clínica veterinaria: clientes, pacientes, agenda, historia clínica, inventario y caja en un solo lugar.",
+  openGraph: {
+    siteName: "SaruVet",
+    locale: "es_EC",
+    type: "website",
+    url: SITE_URL,
+  },
 };
 
 export default function RootLayout({
