@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { tienePermiso } from "@/lib/permisos";
+import { listarPersonal, contarActivos, MAX_USUARIOS_ACTIVOS } from "@/lib/personal";
 import { ROL_LABELS } from "@/components/layout/nav-items";
 import { ClinicaConfigForm } from "@/components/configuracion/ClinicaConfigForm";
 import { CuentaConfigForm } from "@/components/configuracion/CuentaConfigForm";
@@ -17,9 +18,11 @@ export default async function ConfiguracionPage() {
   const rol = session!.user.rol;
   const esAdmin = rol === "ADMIN";
 
-  const [clinica, usuario] = await Promise.all([
+  const [clinica, usuario, personal, activos] = await Promise.all([
     prisma.clinica.findUniqueOrThrow({ where: { id: clinicaId } }),
     prisma.usuario.findUniqueOrThrow({ where: { id: usuarioId } }),
+    esAdmin ? listarPersonal(clinicaId) : Promise.resolve([]),
+    esAdmin ? contarActivos(clinicaId) : Promise.resolve(0),
   ]);
 
   const puedeImportar = tienePermiso(clinica.permisosPersonal, rol, "importar");
@@ -52,7 +55,11 @@ export default async function ConfiguracionPage() {
       {esAdmin && (
         <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
           <h2 className="mb-5 text-sm font-semibold text-gray-900">Personal</h2>
-          <PersonalCard />
+          <PersonalCard
+            initialPersonal={personal}
+            initialActivos={activos}
+            maxActivos={MAX_USUARIOS_ACTIVOS}
+          />
         </div>
       )}
 

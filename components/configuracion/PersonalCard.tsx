@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,12 +38,16 @@ type PersonaPersonal = {
   pendiente: boolean;
 };
 
-export function PersonalCard() {
+type PersonalCardProps = {
+  initialPersonal: PersonaPersonal[];
+  initialActivos: number;
+  maxActivos: number;
+};
+
+export function PersonalCard({ initialPersonal, initialActivos, maxActivos }: PersonalCardProps) {
   const router = useRouter();
-  const [personal, setPersonal] = useState<PersonaPersonal[] | null>(null);
-  const [activos, setActivos] = useState(0);
-  const [maxActivos, setMaxActivos] = useState(8);
-  const [loadingLista, setLoadingLista] = useState(true);
+  const [personal, setPersonal] = useState<PersonaPersonal[]>(initialPersonal);
+  const [activos, setActivos] = useState(initialActivos);
   const [enviando, setEnviando] = useState(false);
   const [accionId, setAccionId] = useState<string | null>(null);
 
@@ -52,23 +56,13 @@ export function PersonalCard() {
     defaultValues: { nombre: "", email: "", rol: "RECEPCIONISTA" },
   });
 
-  async function cargar() {
-    setLoadingLista(true);
-    try {
-      const res = await fetch("/api/configuracion/personal");
-      if (!res.ok) return;
-      const data = await res.json();
-      setPersonal(data.personal);
-      setActivos(data.activos);
-      setMaxActivos(data.maxActivos);
-    } finally {
-      setLoadingLista(false);
-    }
+  async function recargar() {
+    const res = await fetch("/api/configuracion/personal");
+    if (!res.ok) return;
+    const data = await res.json();
+    setPersonal(data.personal);
+    setActivos(data.activos);
   }
-
-  useEffect(() => {
-    cargar();
-  }, []);
 
   async function handleInvitar(values: InvitarUsuarioInput) {
     setEnviando(true);
@@ -87,7 +81,7 @@ export function PersonalCard() {
 
       toast.success(`Invitación enviada a ${values.email}`);
       form.reset({ nombre: "", email: "", rol: "RECEPCIONISTA" });
-      cargar();
+      await recargar();
       router.refresh();
     } finally {
       setEnviando(false);
@@ -110,7 +104,7 @@ export function PersonalCard() {
       }
 
       toast.success(mensajeOk);
-      cargar();
+      await recargar();
     } finally {
       setAccionId(null);
     }
@@ -126,7 +120,7 @@ export function PersonalCard() {
         </p>
       </div>
 
-      {!loadingLista && personal && personal.length > 0 && (
+      {personal.length > 0 && (
         <Table>
           <TableHeader>
             <TableRow>
