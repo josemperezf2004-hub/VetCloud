@@ -60,7 +60,7 @@ export function PermisosCard() {
   return (
     <div className="space-y-5">
       <p className="text-xs text-gray-500">
-        Elegí qué módulos puede usar cada rol. Los cambios aplican al instante, sin que la persona tenga que
+        Elige qué módulos puede usar cada rol. Los cambios aplican al instante, sin que la persona tenga que
         volver a iniciar sesión.
       </p>
 

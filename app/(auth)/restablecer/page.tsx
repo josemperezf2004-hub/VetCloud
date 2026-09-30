@@ -73,7 +73,7 @@ function RestablecerFormulario() {
       <div className="space-y-1 text-center md:text-left">
         <h1 className="text-2xl font-semibold text-gray-900">Crea una nueva contraseña</h1>
         <p className="text-sm text-gray-500">
-          Elegí una contraseña nueva para tu cuenta de VetCloud.
+          Elige una contraseña nueva para tu cuenta de VetCloud.
         </p>
       </div>
 

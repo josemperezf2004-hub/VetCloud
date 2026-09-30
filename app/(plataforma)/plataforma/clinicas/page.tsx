@@ -31,7 +31,7 @@ export default async function ClinicasPlataformaPage() {
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">Clínicas</h1>
         <p className="text-sm text-gray-500">
-          Confirmá pagos de mensualidad para activar el acceso de cada clínica.
+          Confirma pagos de mensualidad para activar el acceso de cada clínica.
         </p>
       </div>
 
