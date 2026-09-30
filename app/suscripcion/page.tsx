@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { format } from "date-fns";
+import { format, addMonths, isBefore } from "date-fns";
 import { es } from "date-fns/locale";
 import { PawPrint, CircleAlert, CircleCheck, Landmark, ArrowLeft } from "lucide-react";
 
@@ -9,7 +9,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CerrarSesionButton } from "@/components/suscripcion/CerrarSesionButton";
 
-const PRECIO_MENSUAL = "$14.99 USD";
+const PRECIO_PROMOCIONAL = 14.99;
+const PRECIO_LISTA = 19.99;
+const DURACION_PROMO_MESES = 3;
 const CUENTA_BANCO = "Banco Pichincha";
 const CUENTA_NUMERO = "2209703045";
 
@@ -21,7 +23,7 @@ export default async function SuscripcionPage() {
 
   const clinica = await prisma.clinica.findUnique({
     where: { id: session.user.clinicaId },
-    select: { nombre: true, activa: true, suscripcionVenceEn: true },
+    select: { nombre: true, activa: true, suscripcionVenceEn: true, creadoEn: true },
   });
   if (!clinica) {
     redirect("/login");
@@ -31,6 +33,10 @@ export default async function SuscripcionPage() {
   const vencida =
     !nuncaPago && clinica.suscripcionVenceEn! < new Date();
   const alDia = clinica.activa && !nuncaPago && !vencida;
+
+  const finPromo = addMonths(clinica.creadoEn, DURACION_PROMO_MESES);
+  const enPromo = isBefore(new Date(), finPromo);
+  const precioActual = enPromo ? PRECIO_PROMOCIONAL : PRECIO_LISTA;
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center bg-gray-50 px-4 py-12">
@@ -82,9 +88,17 @@ export default async function SuscripcionPage() {
           )}
 
           <div className="mt-6 space-y-4">
-            <h1 className="text-lg font-semibold text-gray-900">
-              Mensualidad: {PRECIO_MENSUAL}
-            </h1>
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900">
+                Mensualidad: ${precioActual.toFixed(2)} USD
+              </h1>
+              {enPromo && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Precio de lanzamiento por tus primeros {DURACION_PROMO_MESES} meses.
+                  Después: ${PRECIO_LISTA.toFixed(2)} USD/mes.
+                </p>
+              )}
+            </div>
 
             <div className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 p-4">
               <Landmark className="size-5 shrink-0 text-[#0F6E56]" />
