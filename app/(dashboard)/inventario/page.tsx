@@ -26,7 +26,7 @@ export default async function InventarioPage({
 }) {
   const session = await getServerSession(authOptions);
   if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "inventario"))) {
-    redirect("/");
+    redirect("/dashboard");
   }
   const { q, categoria, page } = await searchParams;
   const categoriaActiva = categoria ?? "TODOS";

@@ -21,7 +21,7 @@ import { tienePermiso, type ModuloRestringible } from "@/lib/permisos";
 export type NavItem = { href: string; label: string; icon: LucideIcon; modulo?: ModuloRestringible };
 
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/clientes", label: "Clientes", icon: Users },
   { href: "/pacientes", label: "Pacientes", icon: Heart },
   { href: "/agenda", label: "Agenda", icon: Calendar },

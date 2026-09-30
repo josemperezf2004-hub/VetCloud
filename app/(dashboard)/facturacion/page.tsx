@@ -24,7 +24,7 @@ export default async function FacturacionPage({
 }) {
   const session = await getServerSession(authOptions);
   if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "facturacion"))) {
-    redirect("/");
+    redirect("/dashboard");
   }
   const { estado, fecha, clienteId, page } = await searchParams;
   const estadoActivo = estado ?? "TODOS";

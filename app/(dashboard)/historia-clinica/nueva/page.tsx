@@ -15,7 +15,7 @@ export default async function NuevaConsultaPage({
 }) {
   const session = await getServerSession(authOptions);
   if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "historia_clinica"))) {
-    redirect("/");
+    redirect("/dashboard");
   }
   const { pacienteId, citaId } = await searchParams;
 

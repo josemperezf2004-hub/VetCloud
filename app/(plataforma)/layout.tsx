@@ -14,7 +14,7 @@ export default async function PlataformaLayout({
   const session = await getServerSession(authOptions);
 
   if (!session?.user || !session.user.esSuperAdmin) {
-    redirect("/");
+    redirect("/dashboard");
   }
 
   return (

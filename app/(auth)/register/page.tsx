@@ -79,7 +79,7 @@ export default function RegisterPage() {
     }
 
     toast.success("¡Bienvenido a VetCloud!");
-    router.push("/");
+    router.push("/dashboard");
     router.refresh();
   }
 

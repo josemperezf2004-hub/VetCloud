@@ -25,7 +25,7 @@ export default async function HistoriaClinicaPage({
 }) {
   const session = await getServerSession(authOptions);
   if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "historia_clinica"))) {
-    redirect("/");
+    redirect("/dashboard");
   }
   const { q, page } = await searchParams;
 

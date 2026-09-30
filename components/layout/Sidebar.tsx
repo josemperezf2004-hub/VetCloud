@@ -42,10 +42,7 @@ export function Sidebar({
 
       <nav className="flex-1 space-y-1 px-3 py-2">
         {navItems.map((item) => {
-          const active =
-            item.href === "/"
-              ? pathname === "/"
-              : pathname?.startsWith(item.href);
+          const active = pathname?.startsWith(item.href);
           const Icon = item.icon;
 
           return (

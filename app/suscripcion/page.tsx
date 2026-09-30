@@ -118,7 +118,7 @@ export default async function SuscripcionPage() {
 
             {alDia && (
               <Link
-                href="/"
+                href="/dashboard"
                 className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0F6E56] hover:underline"
               >
                 <ArrowLeft className="size-4" />

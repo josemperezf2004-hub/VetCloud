@@ -20,6 +20,7 @@ export const config = {
   // sesión y responde 401 JSON — dejar que proxy también la intercepte
   // redirige a /login con HTML, lo que rompe cualquier fetch().then(r =>
   // r.json()) del lado del cliente si la sesión expira) y assets estáticos
-  // requiere sesión.
-  matcher: ["/((?!login|register|api|_next/static|_next/image|favicon.ico).*)"],
+  // requiere sesión. `.+` (no `.*`) además deja pública la raíz "/" —
+  // landing pública, el dashboard real vive en /dashboard.
+  matcher: ["/((?!login|register|api|_next/static|_next/image|favicon.ico).+)"],
 };

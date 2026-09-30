@@ -38,7 +38,7 @@ export default async function FacturaDetallePage({
 }) {
   const session = await getServerSession(authOptions);
   if (!(await tienePermisoClinica(session!.user.clinicaId, session!.user.rol, "facturacion"))) {
-    redirect("/");
+    redirect("/dashboard");
   }
   const { id } = await params;
 

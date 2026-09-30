@@ -36,7 +36,7 @@ export default function DashboardError({
           <RotateCw className="size-4" />
           Reintentar
         </Button>
-        <Link href="/" className="text-sm font-medium text-[#0F6E56] hover:underline">
+        <Link href="/dashboard" className="text-sm font-medium text-[#0F6E56] hover:underline">
           ← Volver al inicio
         </Link>
       </div>
