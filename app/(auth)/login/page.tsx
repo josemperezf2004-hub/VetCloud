@@ -55,7 +55,7 @@ export default function LoginPage() {
         <div className="flex items-center gap-3">
           <PawPrint className="size-10" strokeWidth={1.75} />
           <span className="text-3xl font-semibold tracking-tight">
-            VetCloud
+            SaruVet
           </span>
         </div>
         <p className="max-w-xs text-center text-white/80">

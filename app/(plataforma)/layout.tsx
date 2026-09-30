@@ -23,7 +23,7 @@ export default async function PlataformaLayout({
         <Link href="/plataforma/clinicas" className="flex items-center gap-2 text-[#0F6E56]">
           <PawPrint className="size-6" strokeWidth={1.75} />
           <span className="text-lg font-semibold tracking-tight">
-            VetCloud — Plataforma
+            SaruVet — Plataforma
           </span>
         </Link>
         <CerrarSesionButton />

@@ -1391,5 +1391,17 @@ Estas ideas vienen de `docs/arquitectura-2026-extracto.txt` (documento de arquit
 
 ---
 
-*VetCloud MVP — Construido con Next.js 14 + Prisma + Supabase + Vercel — 100% gratuito en infraestructura*
+### AJUSTE POST-FASE 9 — Rebrand: VetCloud → SaruVet (2026-09-30)
+
+**Motivo:** al buscar "VetCloud" desde un teléfono, el usuario encontró varios productos veterinarios de otros países con nombres casi idénticos ("vet" + "cloud" es una combinación genérica y predecible) — decidió que el nombre no ayuda a que la marca se distinga en una búsqueda. Se brainstormeó una serie de alternativas (evocando huella/pata, nombres inventados tipo "Clinia"/"Vetia") antes de que el usuario eligiera **SaruVet**, con raíz del kichwa andino.
+
+**Cambio de texto en toda la app** (título/metadata, sidebar, header, login, registro, recuperar/restablecer contraseña, suscripción, panel de plataforma, emails transaccionales, seed de datos): todo mención de "VetCloud" pasó a "SaruVet". Se aprovechó el pedido explícito del usuario de sumar un slogan claro ("para que se entienda que es de gestión") — el eyebrow de la landing pasó de "Software para clínicas veterinarias" a "Sistema de gestión para clínicas veterinarias", y el footer a "SaruVet — sistema de gestión veterinaria en la nube".
+
+**Deliberadamente NO renombrado en esta pasada** (para no romper nada mientras se decide el resto del rebrand): el repo de GitHub sigue siendo `josemperezf2004-hub/VetCloud`, el sitio de Netlify sigue siendo `vet-cloud.netlify.app` (el plan es crear `saruvet.netlify.app` como el sitio real y dejar el actual como fallback, mismo patrón que la migración Vercel→Netlify), y el email de contacto de la landing sigue siendo `vetcloud.ec@yahoo.com` (el usuario intentó crear uno nuevo con la marca SaruVet y no pudo — se deja el actual por ahora, revisar si se resuelve más adelante). La clínica `Clínica VetCloud Demo` en la base real sí se renombró a `Clínica SaruVet Demo` (dato en vivo, no requería tocar código).
+
+**Nota histórica importante:** las menciones de "VetCloud" en las secciones de fases anteriores de este documento (Fase 0 en adelante) **no se reescribieron a propósito** — describen correctamente el nombre del producto tal como era en el momento en que se construyó cada fase. Tratar este documento como un registro histórico, no como texto a mantener sincronizado con el nombre actual de la marca.
+
+---
+
+*SaruVet (antes VetCloud) — Construido con Next.js 14 + Prisma + Supabase + Vercel/Netlify — 100% gratuito en infraestructura*
 *Plan corregido y ampliado a partir de: `docs/referencia-free-tier.txt` y `docs/arquitectura-2026-extracto.txt`*

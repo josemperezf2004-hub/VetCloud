@@ -51,7 +51,7 @@ export default function RecuperarPage() {
       <div className="hidden md:flex md:w-2/5 flex-col justify-center items-center gap-4 bg-[#0F6E56] text-white p-12">
         <div className="flex items-center gap-3">
           <PawPrint className="size-10" strokeWidth={1.75} />
-          <span className="text-3xl font-semibold tracking-tight">VetCloud</span>
+          <span className="text-3xl font-semibold tracking-tight">SaruVet</span>
         </div>
         <p className="max-w-xs text-center text-white/80">
           Gestiona tu clínica veterinaria desde cualquier lugar

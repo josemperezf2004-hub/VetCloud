@@ -14,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VetCloud",
+  title: "SaruVet",
   description: "Plataforma de gestión para clínicas veterinarias",
 };
 

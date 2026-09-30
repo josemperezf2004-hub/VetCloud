@@ -22,7 +22,7 @@ const SECTION_LABELS: Record<string, string> = {
 function seccionActual(pathname: string) {
   if (SECTION_LABELS[pathname]) return SECTION_LABELS[pathname];
   const raiz = "/" + pathname.split("/")[1];
-  return SECTION_LABELS[raiz] ?? "VetCloud";
+  return SECTION_LABELS[raiz] ?? "SaruVet";
 }
 
 export function Header({
@@ -54,7 +54,7 @@ export function Header({
       <div className="flex items-center gap-1">
         <MobileNav usuarioNombre={usuarioNombre} usuarioRol={usuarioRol} permisos={permisos} />
         <nav aria-label="breadcrumb" className="text-sm text-gray-500">
-          <span className="hidden sm:inline">VetCloud</span>
+          <span className="hidden sm:inline">SaruVet</span>
           <span className="mx-2 hidden sm:inline">/</span>
           <span className="font-medium text-gray-900">
             {seccionActual(pathname ?? "/")}

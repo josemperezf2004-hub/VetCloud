@@ -71,7 +71,7 @@ async function main() {
     where: { email: clinicaEmail },
     update: {},
     create: {
-      nombre: "Clínica VetCloud Demo",
+      nombre: "Clínica SaruVet Demo",
       email: clinicaEmail,
       telefono: "0991234567",
       direccion: "Av. Amazonas 123, Quito",

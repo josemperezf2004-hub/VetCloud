@@ -73,7 +73,7 @@ function RestablecerFormulario() {
       <div className="space-y-1 text-center md:text-left">
         <h1 className="text-2xl font-semibold text-gray-900">Crea una nueva contraseña</h1>
         <p className="text-sm text-gray-500">
-          Elige una contraseña nueva para tu cuenta de VetCloud.
+          Elige una contraseña nueva para tu cuenta de SaruVet.
         </p>
       </div>
 
@@ -118,7 +118,7 @@ export default function RestablecerPage() {
       <div className="hidden md:flex md:w-2/5 flex-col justify-center items-center gap-4 bg-[#0F6E56] text-white p-12">
         <div className="flex items-center gap-3">
           <PawPrint className="size-10" strokeWidth={1.75} />
-          <span className="text-3xl font-semibold tracking-tight">VetCloud</span>
+          <span className="text-3xl font-semibold tracking-tight">SaruVet</span>
         </div>
         <p className="max-w-xs text-center text-white/80">
           Gestiona tu clínica veterinaria desde cualquier lugar

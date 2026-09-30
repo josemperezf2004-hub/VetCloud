@@ -57,7 +57,7 @@ export function MobileNav({
         <div className="flex h-full flex-col">
           <div className="flex items-center gap-2 px-5 py-5">
             <PawPrint className="size-7" strokeWidth={1.75} />
-            <span className="text-lg font-semibold tracking-tight">VetCloud</span>
+            <span className="text-lg font-semibold tracking-tight">SaruVet</span>
           </div>
 
           <nav className="flex-1 space-y-1 px-3 py-2">

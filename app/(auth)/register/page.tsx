@@ -78,7 +78,7 @@ export default function RegisterPage() {
       return;
     }
 
-    toast.success("¡Bienvenido a VetCloud!");
+    toast.success("¡Bienvenido a SaruVet!");
     router.push("/dashboard");
     router.refresh();
   }
@@ -90,7 +90,7 @@ export default function RegisterPage() {
           <div className="flex items-center gap-2 text-[#0F6E56]">
             <PawPrint className="size-8" strokeWidth={1.75} />
             <span className="text-2xl font-semibold tracking-tight">
-              VetCloud
+              SaruVet
             </span>
           </div>
           <p className="text-sm text-gray-500">

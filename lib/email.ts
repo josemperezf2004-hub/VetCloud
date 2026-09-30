@@ -43,8 +43,8 @@ export async function enviarEmail(destinatario: string, asunto: string, html: st
 export async function enviarEmailRecuperacion(destinatario: string, link: string) {
   await enviarEmail(
     destinatario,
-    "Recupera tu contraseña de VetCloud",
-    `<p>Recibimos una solicitud para restablecer tu contraseña de VetCloud.</p>
+    "Recupera tu contraseña de SaruVet",
+    `<p>Recibimos una solicitud para restablecer tu contraseña de SaruVet.</p>
      <p><a href="${link}">Haz clic aquí para crear una nueva contraseña</a></p>
      <p>Este enlace vence en 1 hora. Si no solicitaste esto, puedes ignorar este email.</p>`
   );
@@ -57,8 +57,8 @@ export async function enviarEmailInvitacion(
 ) {
   await enviarEmail(
     destinatario,
-    `Te invitaron a unirte a ${datos.clinicaNombre} en VetCloud`,
-    `<p>Te invitaron a formar parte del equipo de <strong>${datos.clinicaNombre}</strong> en VetCloud, con rol de <strong>${datos.rol}</strong>.</p>
+    `Te invitaron a unirte a ${datos.clinicaNombre} en SaruVet`,
+    `<p>Te invitaron a formar parte del equipo de <strong>${datos.clinicaNombre}</strong> en SaruVet, con rol de <strong>${datos.rol}</strong>.</p>
      <p><a href="${link}">Haz clic aquí para crear tu contraseña y activar tu cuenta</a></p>
      <p>Este enlace vence en 72 horas. Si no esperabas esta invitación, puedes ignorar este email.</p>`
   );

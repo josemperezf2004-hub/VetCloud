@@ -44,7 +44,7 @@ export default async function SuscripcionPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-[#0F6E56]">
             <PawPrint className="size-7" strokeWidth={1.75} />
-            <span className="text-xl font-semibold tracking-tight">VetCloud</span>
+            <span className="text-xl font-semibold tracking-tight">SaruVet</span>
           </div>
           <CerrarSesionButton />
         </div>
@@ -112,8 +112,8 @@ export default async function SuscripcionPage() {
 
             <p className="text-sm text-gray-500">
               {alDia
-                ? "Para renovar antes del vencimiento, realiza la transferencia y envía el comprobante al equipo de VetCloud — la activación es manual y puede tardar hasta un día hábil."
-                : "Una vez hecha la transferencia, envía el comprobante al equipo de VetCloud para que activemos (o renovemos) tu cuenta. La activación es manual — puede tardar hasta un día hábil."}
+                ? "Para renovar antes del vencimiento, realiza la transferencia y envía el comprobante al equipo de SaruVet — la activación es manual y puede tardar hasta un día hábil."
+                : "Una vez hecha la transferencia, envía el comprobante al equipo de SaruVet para que activemos (o renovemos) tu cuenta. La activación es manual — puede tardar hasta un día hábil."}
             </p>
 
             {alDia && (

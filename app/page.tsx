@@ -8,7 +8,7 @@ const WHATSAPP_URL = "https://wa.me/593967063982";
 const WHATSAPP_LABEL = "+593 96 706 3982";
 
 export const metadata: Metadata = {
-  title: "VetCloud — Tu clínica, organizada de principio a fin",
+  title: "SaruVet — Tu clínica, organizada de principio a fin",
   description:
     "Software de gestión para clínicas veterinarias: clientes, pacientes, agenda, historia clínica, inventario y facturación en un solo lugar.",
 };
@@ -26,7 +26,7 @@ export default function LandingPage() {
               <circle cx="9.5" cy="5" r="1.6" />
               <circle cx="14.5" cy="5" r="1.6" />
             </svg>
-            VetCloud
+            SaruVet
           </div>
           <Link className={styles.ctaMini} href="/register">Quiero probarlo</Link>
         </div>
@@ -34,7 +34,7 @@ export default function LandingPage() {
         <div className={styles.hero}>
           <div className={styles.heroInner}>
             <div>
-              <span className={styles.eyebrow}><span className={styles.dot} />Software para clínicas veterinarias</span>
+              <span className={styles.eyebrow}><span className={styles.dot} />Sistema de gestión para clínicas veterinarias</span>
               <h1>Tu clínica, <em>organizada</em> de principio a fin</h1>
               <p className={styles.sub}>
                 Historias clínicas, agenda, inventario y facturación en un solo
@@ -94,7 +94,7 @@ export default function LandingPage() {
         <section className={styles.section} id="funciones">
           <div className={styles.sectionHead}>
             <div className={styles.sectionKicker}>Todo en un solo lugar</div>
-            <h2>Lo que VetCloud hace por tu clínica</h2>
+            <h2>Lo que SaruVet hace por tu clínica</h2>
             <p>Áreas conectadas entre sí: lo que cargas en una, aparece automáticamente en las demás.</p>
           </div>
           <div className={styles.featGrid}>
@@ -169,7 +169,7 @@ export default function LandingPage() {
         <section className={styles.section} id="contacto">
           <div className={styles.ctaBand}>
             <h2>Deja de administrar tu clínica a mano</h2>
-            <p>VetCloud reúne clientes, mascotas, agenda, historia clínica, inventario y facturación en un solo sistema.</p>
+            <p>SaruVet reúne clientes, mascotas, agenda, historia clínica, inventario y facturación en un solo sistema.</p>
             <Link className={styles.btnPrimary} href="/register">Registrar mi clínica</Link>
             <div className={styles.ctaContacto}>
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp: {WHATSAPP_LABEL}</a>
@@ -179,7 +179,7 @@ export default function LandingPage() {
         </section>
 
         <footer className={styles.footer}>
-          <span>VetCloud — gestión veterinaria en la nube</span>
+          <span>SaruVet — sistema de gestión veterinaria en la nube</span>
           <span>
             <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">{WHATSAPP_LABEL}</a>
             {" · "}
