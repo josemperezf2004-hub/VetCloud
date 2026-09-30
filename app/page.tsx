@@ -10,7 +10,7 @@ const WHATSAPP_LABEL = "+593 96 706 3982";
 export const metadata: Metadata = {
   title: "SaruVet — Tu clínica, organizada de principio a fin",
   description:
-    "Software de gestión para clínicas veterinarias: clientes, pacientes, agenda, historia clínica, inventario y facturación en un solo lugar.",
+    "Software de gestión para clínicas veterinarias: clientes, pacientes, agenda, historia clínica, inventario y caja en un solo lugar.",
 };
 
 export default function LandingPage() {
@@ -37,7 +37,7 @@ export default function LandingPage() {
               <span className={styles.eyebrow}><span className={styles.dot} />Sistema de gestión para clínicas veterinarias</span>
               <h1>Tu clínica, <em>organizada</em> de principio a fin</h1>
               <p className={styles.sub}>
-                Historias clínicas, agenda, inventario y facturación en un solo
+                Historias clínicas, agenda, inventario y caja en un solo
                 lugar. Sin papeles, sin planillas sueltas, sin depender de la
                 memoria de nadie. Se abre desde cualquier navegador, en la
                 computadora de recepción o desde el celular.
@@ -125,7 +125,7 @@ export default function LandingPage() {
             </div>
             <div className={styles.featCard}>
               <div className={styles.featIcon}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16l3-2 3 2 3-2 3 2V4a2 2 0 0 0-2-2Z" /><path d="M9 8h6M9 12h6M9 16h3" /></svg></div>
-              <h3>Caja / Facturación simple</h3>
+              <h3>Caja simple</h3>
               <p>Genera un recibo por consulta en un clic, con numeración automática y control de qué está pagado y qué no.</p>
             </div>
           </div>
@@ -151,7 +151,7 @@ export default function LandingPage() {
               <div className={styles.step}>
                 <div className={styles.num}>3</div>
                 <h3>Empieza a atender</h3>
-                <p>Agenda, historia clínica, inventario y facturación, ya conectados entre sí.</p>
+                <p>Agenda, historia clínica, inventario y caja, ya conectados entre sí.</p>
               </div>
             </div>
           </div>
@@ -169,7 +169,7 @@ export default function LandingPage() {
         <section className={styles.section} id="contacto">
           <div className={styles.ctaBand}>
             <h2>Deja de administrar tu clínica a mano</h2>
-            <p>SaruVet reúne clientes, mascotas, agenda, historia clínica, inventario y facturación en un solo sistema.</p>
+            <p>SaruVet reúne clientes, mascotas, agenda, historia clínica, inventario y caja en un solo sistema.</p>
             <Link className={styles.btnPrimary} href="/register">Registrar mi clínica</Link>
             <div className={styles.ctaContacto}>
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">WhatsApp: {WHATSAPP_LABEL}</a>
