@@ -75,8 +75,8 @@ export default function LandingPage() {
           <div className={styles.painGrid}>
             <div className={styles.painCard}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
-              <h3>Turnos que se pisan</h3>
-              <p>Dos citas agendadas a la misma hora con el mismo veterinario, y nadie se da cuenta hasta que llegan los dos clientes juntos.</p>
+              <h3>Citas duplicadas por error</h3>
+              <p>Dos clientes agendados a la misma hora con el mismo veterinario, y nadie se entera hasta que llegan juntos a la clínica.</p>
             </div>
             <div className={styles.painCard}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" /></svg>
@@ -95,13 +95,13 @@ export default function LandingPage() {
           <div className={styles.sectionHead}>
             <div className={styles.sectionKicker}>Todo en un solo lugar</div>
             <h2>Lo que VetCloud hace por tu clínica</h2>
-            <p>Áreas conectadas entre sí: lo que cargás en una, aparece automáticamente en las demás.</p>
+            <p>Áreas conectadas entre sí: lo que cargas en una, aparece automáticamente en las demás.</p>
           </div>
           <div className={styles.featGrid}>
             <div className={styles.featCard}>
               <div className={styles.featIcon}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5" /><rect x="14" y="3" width="7" height="5" rx="1.5" /><rect x="14" y="12" width="7" height="9" rx="1.5" /><rect x="3" y="16" width="7" height="5" rx="1.5" /></svg></div>
               <h3>Panel de control</h3>
-              <p>Citas del día, ventas, stock bajo y clientes nuevos, de un vistazo apenas entrás. Sin tener que sumar nada a mano.</p>
+              <p>Citas del día, ventas, stock bajo y clientes nuevos, de un vistazo apenas entras. Sin tener que sumar nada a mano.</p>
             </div>
             <div className={styles.featCard}>
               <div className={styles.featIcon}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" /><circle cx="10" cy="7" r="4" /></svg></div>
@@ -126,7 +126,7 @@ export default function LandingPage() {
             <div className={styles.featCard}>
               <div className={styles.featIcon}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16l3-2 3 2 3-2 3 2V4a2 2 0 0 0-2-2Z" /><path d="M9 8h6M9 12h6M9 16h3" /></svg></div>
               <h3>Caja / Facturación simple</h3>
-              <p>Generá un recibo por consulta en un clic, con numeración automática y control de qué está pagado y qué no.</p>
+              <p>Genera un recibo por consulta en un clic, con numeración automática y control de qué está pagado y qué no.</p>
             </div>
           </div>
         </section>
@@ -135,22 +135,22 @@ export default function LandingPage() {
           <div className={styles.stepsBand}>
             <div className={styles.sectionHead} style={{ marginBottom: 0 }}>
               <div className={styles.sectionKicker}>Empezar es rápido</div>
-              <h2>De cero a atendiendo, en tres pasos</h2>
+              <h2>Tres pasos para empezar a atender</h2>
             </div>
             <div className={styles.stepsGrid}>
               <div className={styles.step}>
                 <div className={styles.num}>1</div>
-                <h3>Registrás tu clínica</h3>
+                <h3>Registra tu clínica</h3>
                 <p>Nombre, contacto y tu cuenta de administrador. Sin instalar nada.</p>
               </div>
               <div className={styles.step}>
                 <div className={styles.num}>2</div>
-                <h3>Cargás clientes y mascotas</h3>
+                <h3>Carga clientes y mascotas</h3>
                 <p>A tu ritmo, uno por uno, o de una vez importando un Excel.</p>
               </div>
               <div className={styles.step}>
                 <div className={styles.num}>3</div>
-                <h3>Empezás a atender</h3>
+                <h3>Empieza a atender</h3>
                 <p>Agenda, historia clínica, inventario y facturación, ya conectados entre sí.</p>
               </div>
             </div>
@@ -168,7 +168,7 @@ export default function LandingPage() {
 
         <section className={styles.section} id="contacto">
           <div className={styles.ctaBand}>
-            <h2>Dejá de administrar tu clínica a mano</h2>
+            <h2>Deja de administrar tu clínica a mano</h2>
             <p>VetCloud reúne clientes, mascotas, agenda, historia clínica, inventario y facturación en un solo sistema.</p>
             <Link className={styles.btnPrimary} href="/register">Registrar mi clínica</Link>
             <div className={styles.ctaContacto}>
