@@ -12,6 +12,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ProductoSelect } from "@/components/inventario/ProductoSelect";
 import type { ConsultaInput } from "@/lib/validations";
 
@@ -44,6 +51,7 @@ export function PrescripcionForm({
               frecuencia: "",
               diasTratamiento: "",
               notas: "",
+              aplicadoEnClinica: true,
             })
           }
         >
@@ -95,6 +103,35 @@ export function PrescripcionForm({
               <Trash2 className="size-4" />
             </Button>
           </div>
+
+          <FormField
+            control={control}
+            name={`prescripciones.${index}.aplicadoEnClinica` as `prescripciones.${number}.aplicadoEnClinica`}
+            render={({ field: aplicadoField }) => (
+              <FormItem>
+                <FormLabel>¿Cómo se usa este medicamento? *</FormLabel>
+                <Select
+                  onValueChange={(value) => aplicadoField.onChange(value === "APLICADO")}
+                  value={aplicadoField.value === false ? "RECETADO" : "APLICADO"}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="APLICADO">
+                      Aplicado en clínica (descuenta inventario ahora)
+                    </SelectItem>
+                    <SelectItem value="RECETADO">
+                      Para comprar/llevar a casa (descuenta solo al facturar)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <FormField

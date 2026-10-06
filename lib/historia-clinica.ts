@@ -102,7 +102,14 @@ export async function crearConsulta(
       },
     });
 
+    // Solo lo "aplicado en clínica" descuenta stock al guardar la consulta —
+    // un medicamento recetado solo "para comprar" todavía no se vendió, así
+    // que descontarlo aquí dejaría el inventario corto si el cliente termina
+    // sin comprarlo. Ese caso se descuenta recién en crearFactura (lib/facturas.ts)
+    // cuando de verdad se factura.
     for (const item of data.prescripciones) {
+      if (!item.aplicadoEnClinica) continue;
+
       const producto = await tx.producto.findFirst({
         where: { id: item.productoId, clinicaId, deletedAt: null },
       });

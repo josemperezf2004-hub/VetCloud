@@ -209,6 +209,7 @@ async function main() {
                 dosis: "1 tableta",
                 frecuencia: "Cada 12 horas",
                 diasTratamiento: "5 días",
+                aplicadoEnClinica: true,
               },
             ]
           : [],

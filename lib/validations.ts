@@ -200,6 +200,13 @@ export const prescripcionItemSchema = z.object({
   frecuencia: z.string().optional().or(z.literal("")),
   diasTratamiento: z.string().optional().or(z.literal("")),
   notas: z.string().optional().or(z.literal("")),
+  // Distingue un medicamento aplicado ahí mismo en el consultorio (se
+  // descuenta del stock al guardar la consulta, como antes) de uno recetado
+  // solo para que el propietario lo compre después — ese segundo caso NO
+  // descuenta stock aquí, para no restar inventario de algo que el cliente
+  // podría no llegar a comprar. Ver `crearFactura` en lib/facturas.ts, que
+  // descuenta este tipo de item recién cuando de verdad se factura.
+  aplicadoEnClinica: z.boolean(),
 });
 
 export type PrescripcionItemInput = z.infer<typeof prescripcionItemSchema>;
@@ -346,6 +353,11 @@ export const facturaItemSchema = z.object({
   precioUnit: z
     .number({ message: "Ingresa el precio unitario" })
     .nonnegative("El precio no puede ser negativo"),
+  // true solo para un item que viene de una prescripción "para comprar" de
+  // una consulta (ver prescripcionItemSchema) y todavía no descontó stock —
+  // crearFactura lo descuenta recién al confirmarse esta factura. Ausente/
+  // false en cualquier otro item (venta manual, o ya descontado en consulta).
+  pendienteDescuento: z.boolean().optional(),
 });
 
 export type FacturaItemInput = z.infer<typeof facturaItemSchema>;

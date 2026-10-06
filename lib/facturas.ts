@@ -102,11 +102,15 @@ export async function getEstadisticasFacturacion(clinicaId: string) {
 }
 
 // Arma el borrador de items a partir de las prescripciones de una consulta ya
-// guardada (Fase 6) — el inventario ya se descontó en ese momento, así que
-// aquí solo se lee, nunca se vuelve a tocar stock. El precio se toma del
-// precio de venta *actual* del producto (no se guardó un precio histórico en
-// la prescripción), por eso el resultado es un borrador editable, no una
-// factura ya creada: el usuario confirma/ajusta antes de guardar.
+// guardada (Fase 6). Un item "aplicado en clínica" ya descontó inventario en
+// ese momento, así que aquí solo se lee, nunca se vuelve a tocar stock. Un
+// item "para comprar" todavía no descontó nada — se marca `pendienteDescuento`
+// para que crearFactura lo descuente recién si el usuario de verdad lo factura
+// (y lo deja descontar en 0 si el empleado quita la línea porque el cliente no
+// lo compró). El precio se toma del precio de venta *actual* del producto (no
+// se guardó un precio histórico en la prescripción), por eso el resultado es
+// un borrador editable, no una factura ya creada: el usuario confirma/ajusta
+// antes de guardar.
 export async function getBorradorDesdeConsulta(clinicaId: string, historiaId: string) {
   const historia = await prisma.historiaClinica.findFirst({
     where: { id: historiaId, clinicaId },
@@ -123,7 +127,12 @@ export async function getBorradorDesdeConsulta(clinicaId: string, historiaId: st
 
   const prescripciones =
     (historia.prescripciones as
-      | { productoId: string; productoNombre: string; cantidad: number }[]
+      | {
+          productoId: string;
+          productoNombre: string;
+          cantidad: number;
+          aplicadoEnClinica?: boolean;
+        }[]
       | null) ?? [];
 
   const productos = await prisma.producto.findMany({
@@ -140,6 +149,9 @@ export async function getBorradorDesdeConsulta(clinicaId: string, historiaId: st
       descripcion: `${p.productoNombre} (${historia.paciente.nombre})`,
       cantidad: p.cantidad,
       precioUnit: precioPorId.get(p.productoId) ?? 0,
+      // Registros viejos (antes de este cambio) no tienen el campo — se
+      // asumen "aplicado en clínica" porque ya se descontaron en su momento.
+      pendienteDescuento: !(p.aplicadoEnClinica ?? true),
     })),
   };
 }
@@ -179,12 +191,13 @@ export async function crearFactura(clinicaId: string, data: FacturaInput) {
       descripcion: item.descripcion,
       cantidad: item.cantidad,
       precioUnit: item.productoId ? precioPorId.get(item.productoId)! : item.precioUnit,
+      pendienteDescuento: !!item.pendienteDescuento,
     }));
 
     const subtotal = items.reduce((acc, item) => acc + item.cantidad * item.precioUnit, 0);
     const total = Math.max(0, subtotal - data.descuento);
 
-    return tx.factura.create({
+    const factura = await tx.factura.create({
       data: {
         clinicaId,
         clienteId: data.clienteId,
@@ -194,7 +207,7 @@ export async function crearFactura(clinicaId: string, data: FacturaInput) {
         total,
         notas: data.notas || null,
         items: {
-          create: items.map((item) => ({
+          create: items.map(({ pendienteDescuento, ...item }) => ({
             ...item,
             subtotal: item.cantidad * item.precioUnit,
           })),
@@ -202,5 +215,49 @@ export async function crearFactura(clinicaId: string, data: FacturaInput) {
       },
       include: { items: true, cliente: { select: { nombre: true, apellido: true } } },
     });
+
+    // Descuenta stock recién ahora para los items que venían "para comprar"
+    // de una consulta (ver getBorradorDesdeConsulta) y todavía no habían
+    // tocado inventario — si el cliente no los compró, el empleado ya los
+    // sacó del borrador antes de llegar aquí, así que nunca entran a este
+    // loop. Mismo criterio de "todo o nada" que crearConsulta: si falta stock,
+    // se revierte también la factura recién creada.
+    for (const item of items) {
+      if (!item.pendienteDescuento || !item.productoId) continue;
+
+      const producto = await tx.producto.findFirst({
+        where: { id: item.productoId, clinicaId, deletedAt: null },
+      });
+      if (!producto) {
+        throw new Error("Uno de los productos del recibo no existe en esta clínica");
+      }
+
+      const stockDespues = producto.stockActual - item.cantidad;
+      if (stockDespues < 0) {
+        throw new Error(
+          `Stock insuficiente de "${producto.nombre}" (disponible: ${producto.stockActual} ${producto.unidad})`
+        );
+      }
+
+      await tx.producto.update({
+        where: { id: producto.id },
+        data: { stockActual: stockDespues },
+      });
+
+      await tx.movimientoInventario.create({
+        data: {
+          productoId: producto.id,
+          tipo: "SALIDA",
+          cantidad: item.cantidad,
+          stockAntes: producto.stockActual,
+          stockDespues,
+          motivo: "Venta en factura",
+          referenciaId: factura.id,
+          referenciaType: "Factura",
+        },
+      });
+    }
+
+    return factura;
   });
 }
