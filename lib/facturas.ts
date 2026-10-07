@@ -207,8 +207,11 @@ export async function crearFactura(clinicaId: string, data: FacturaInput) {
         total,
         notas: data.notas || null,
         items: {
-          create: items.map(({ pendienteDescuento, ...item }) => ({
-            ...item,
+          create: items.map((item) => ({
+            productoId: item.productoId,
+            descripcion: item.descripcion,
+            cantidad: item.cantidad,
+            precioUnit: item.precioUnit,
             subtotal: item.cantidad * item.precioUnit,
           })),
         },

@@ -454,6 +454,23 @@ function celdaANumero(valor: unknown): unknown {
 
 const celdaTextoOpcional = z.preprocess(normalizarCelda, z.string().optional());
 
+// Si la columna de la plantilla no quedó como texto (plantillas descargadas
+// antes de este fix, o alguien que reformateó la celda a mano), Excel
+// interpreta "0991234567" como número y borra el 0 inicial -> llega como
+// 991234567 (9 dígitos). Los celulares y cédulas de Ecuador tienen 10
+// dígitos, así que un número de exactamente 9 dígitos es casi siempre ese
+// mismo 0 perdido — se restaura. La plantilla nueva (generarPlantilla, en
+// lib/importacion.ts) ya fuerza formato de texto en estas columnas para que
+// esto ni siquiera llegue a pasar; esto es solo la red de seguridad.
+function normalizarNumeroConCeroInicial(valor: unknown): unknown {
+  const normalizado = normalizarCelda(valor);
+  if (typeof normalizado !== "number") return normalizado;
+  const texto = String(Math.trunc(normalizado));
+  return texto.length === 9 ? `0${texto}` : texto;
+}
+
+const celdaTelefonoOpcional = z.preprocess(normalizarNumeroConCeroInicial, z.string().optional());
+
 function celdaEnum<T extends readonly [string, ...string[]]>(valores: T, label: string) {
   return z.preprocess((valor) => {
     const normalizado = normalizarCelda(valor);
@@ -476,10 +493,13 @@ const celdaNumeroOpcional = z.preprocess(
 export const clienteImportRowSchema = z.object({
   nombre: z.preprocess(normalizarCelda, z.string("Falta el nombre").min(2, "El nombre es muy corto")),
   apellido: z.preprocess(normalizarCelda, z.string("Falta el apellido").min(2, "El apellido es muy corto")),
-  telefono: z.preprocess(normalizarCelda, z.string("Falta el teléfono").min(7, "Teléfono inválido")),
-  whatsapp: celdaTextoOpcional,
+  telefono: z.preprocess(
+    normalizarNumeroConCeroInicial,
+    z.string("Falta el teléfono").min(7, "Teléfono inválido")
+  ),
+  whatsapp: celdaTelefonoOpcional,
   email: z.preprocess(normalizarCelda, z.string().email("Email inválido").optional()),
-  cedula: celdaTextoOpcional,
+  cedula: celdaTelefonoOpcional,
   direccion: celdaTextoOpcional,
   notas: celdaTextoOpcional,
 });
@@ -488,7 +508,7 @@ export type ClienteImportRow = z.infer<typeof clienteImportRowSchema>;
 
 export const pacienteImportRowSchema = z.object({
   telefonoPropietario: z.preprocess(
-    normalizarCelda,
+    normalizarNumeroConCeroInicial,
     z.string("Falta el teléfono del propietario").min(7, "Teléfono del propietario inválido")
   ),
   nombre: z.preprocess(normalizarCelda, z.string("Falta el nombre de la mascota").min(1, "Falta el nombre de la mascota")),

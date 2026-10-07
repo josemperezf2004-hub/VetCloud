@@ -80,6 +80,14 @@ const NOMBRE_HOJA: Record<EntidadImportable, string> = {
   productos: "Productos",
 };
 
+// Columnas que son "números que empiezan en 0" (teléfonos, cédula) — si la
+// celda queda en formato General/Número, Excel interpreta lo que se escribe
+// como un número real y borra el 0 inicial apenas se sale de la celda
+// (0991234567 -> 991234567). Forzar formato de texto ("@") evita esto de
+// raíz; lib/validations.ts además restaura el 0 si de todos modos llega
+// como número (plantillas viejas ya descargadas antes de este fix).
+const COLUMNAS_TEXTO_FORZADO = new Set(["telefono", "telefonoPropietario", "whatsapp", "cedula"]);
+
 export async function generarPlantilla(entidad: EntidadImportable): Promise<Buffer> {
   const columnas = COLUMNAS[entidad];
   const workbook = new ExcelJS.Workbook();
@@ -97,14 +105,21 @@ export async function generarPlantilla(entidad: EntidadImportable): Promise<Buff
   hoja.views = [{ state: "frozen", ySplit: 1 }];
 
   columnas.forEach((columna, index) => {
-    if (!columna.opciones) return;
     const colNumero = index + 1;
+    const forzarTexto = COLUMNAS_TEXTO_FORZADO.has(columna.key);
+    if (!columna.opciones && !forzarTexto) return;
     for (let fila = 2; fila <= MAX_FILAS + 1; fila++) {
-      hoja.getCell(fila, colNumero).dataValidation = {
-        type: "list",
-        allowBlank: !columna.requerido,
-        formulae: [`"${columna.opciones.join(",")}"`],
-      };
+      const celda = hoja.getCell(fila, colNumero);
+      if (columna.opciones) {
+        celda.dataValidation = {
+          type: "list",
+          allowBlank: !columna.requerido,
+          formulae: [`"${columna.opciones.join(",")}"`],
+        };
+      }
+      if (forzarTexto) {
+        celda.numFmt = "@";
+      }
     }
   });
 
